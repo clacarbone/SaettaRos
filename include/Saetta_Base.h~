@@ -38,16 +38,16 @@
 
 #ifndef SAETTA_BASE_H
 #define SAETTA_BASE_H
-
+#define PIC_LOG_TO_SCREEN 1
 //#include "serverWIFI.h"
-
 // ROS includes.
 #include "ros/ros.h"
 #include "ros/time.h"
 #include <geometry_msgs/Twist.h>
 #include <turtlesim/Velocity.h>
-
-
+#include <termios.h>
+#include <errno.h>
+#include <unistd.h>
 
 // Custom message includes. Auto-generated from msg/ directory.
 //#include <Saetta_Base/Saetta_Base_data.h>
@@ -68,6 +68,7 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <iostream>
+#include <sstream>
 typedef const turtlesim::Velocity::ConstPtr _local_msgtype;
 
 using std::string;
@@ -158,7 +159,46 @@ pthread_mutex_t  mutex;
 int log_fd;
 int pic_log_fd;
 
+int
+set_interface_attribs (int fd, int speed, int parity)
+{
+        struct termios tty;
+        memset (&tty, 0, sizeof tty);
+        if (tcgetattr (fd, &tty) != 0)
+        {
+                printf ("error %d from tcgetattr", errno);
+                return -1;
+        }
 
+        cfsetospeed (&tty, speed);
+        cfsetispeed (&tty, speed);
+
+        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
+        // disable IGNBRK for mismatched speed tests; otherwise receive break
+        // as \000 chars
+        tty.c_iflag &= ~IGNBRK;         // ignore break signal
+        tty.c_lflag = 0;                // no signaling chars, no echo,
+                                        // no canonical processing
+        tty.c_oflag = 0;                // no remapping, no delays
+        tty.c_cc[VMIN]  = 0;            // read doesn't block
+        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+
+        tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
+
+        tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls,
+                                        // enable reading
+        tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
+        tty.c_cflag |= parity;
+        tty.c_cflag &= ~CSTOPB;
+        tty.c_cflag &= ~CRTSCTS;
+
+        if (tcsetattr (fd, TCSANOW, &tty) != 0)
+        {
+                printf ("error %d from tcsetattr", errno);
+                return -1;
+        }
+        return 0;
+}
 pthread_t	thread_wifi;
 //struct payload_pkg_trajectory pay;
 int file_exists(const char * filename);

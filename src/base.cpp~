@@ -8,15 +8,17 @@
 #include <cstdlib>
 #include <ros/ros.h>
 //#include "serverWIFI.h"
-#define LOG_FROM_MAIN_THREAD
-#define PIC_LOG_TO_SCREEN
 #include "Saetta_Base.h"
 #define MAX_LEN 99
-
+#define NUM_SENS 5
 char buffer[MAX_LEN+1] = {0};
 int out_pipe[2];
 int saved_stdout;
 using namespace std;
+char *portname = "/dev/ttyO3";
+
+int main_proc(void);
+
 //using namespace SaettaServerWifi;
 
 /*------------------------------------------------------------------------------
@@ -30,7 +32,6 @@ using namespace std;
 }*/
 
 
-void *tf_output(void *args);
 void listenerCallback (const turtlesim::Velocity::ConstPtr & msg)
 {
     ROS_INFO("Received linear: [%f], angular: [%f]\n", msg->linear, msg->angular);
@@ -42,7 +43,97 @@ void listenerCallback (const turtlesim::Velocity::ConstPtr & msg)
  *----------------------------------------------------------------------------*/
 int main(int argc, char** argv)
 {
+    WINDOW *my_win, *my_win2;
+    int cycle = 0, pid, p[2], row, col;
+    int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
+    if (fd < 0)
+    {
+        printf ("error %d opening %s: %s", errno, portname, strerror (errno));
+        return -1;
+    }
 
+if(pipe(p) == -1)
+	{
+		perror("pipe call error");
+		return(1);
+	}
+	
+	switch (pid=fork())
+	{
+		case -1: perror("error: fork call");
+			return(2);
+
+		case 0:  /* if child then write down pipe */
+			//close(p[0]);  /* first close the read end of the pipe */
+			if(dup2(p[1], 1) == -1 ) /* stdout == write end of the pipe */
+			{
+				perror( "dup2 failed" );
+				return(1);
+			}
+			
+			setvbuf(stdout, NULL, _IOLBF, 1000);
+			main_proc();
+			printf("\n\tChild quitting cleanly\n\n");
+			break;
+		default:
+			s_catch_signals ();
+			std::string mystr;
+			//close(p[1]);  /* first close the write end of the pipe */
+			if(dup2(p[0], 0 ) == -1 ) /* stdin == read end of the pipe */
+			{
+				perror( "dup2 failed" );
+				return(1);
+			}
+			initscr();				/* start the curses mode */
+			getmaxyx(stdscr,row,col);		/* get the number of rows and columns */
+			mvprintw(row/2,(col-strlen(mesg))/2,"%s",mesg);
+							/* print the message at the center of the screen */
+
+			refresh();
+			my_win2 = create_newwin(10,col,row-10, 0, 0, 0);	
+			wrefresh(my_win2);
+			my_win = create_newwin(8,col-2,row-9, 1, ' ', ' ');
+			wrefresh(my_win);
+			wprintw(my_win,"This screen has %d rows and %d columns\n",row,col);
+			wprintw(my_win,"Try resizing your window(if possible) and then run this program again\n");
+			scrollok(my_win,TRUE);
+			int myy,myx;
+			std::stringstream ss;
+			while(!s_interrupted)
+			{
+				while( std::getline(std::cin, mystr) )
+				{
+					ss.clear();
+					ss << mystr << std::endl;
+					mystr = ss.str();
+					//std::cout<< mystr<<std::endl;
+					waddstr(my_win,mystr.c_str());
+					wrefresh(my_win);
+					//getyx(my_win,myy,myx);
+					//wmove(my_win,myy+1,0);
+				}
+				usleep(100000);
+
+			}
+			endwin();
+			
+			
+			break;
+	}
+
+
+
+	//dup2(saved_stdout, STDOUT_FILENO);  /* reconnect stdout for testing */
+	//setvbuf(stdout, NULL, _IOLBF, 0);
+	endwin();
+	printf("\n\tProgram quitting cleanly\n\n");
+	return (EXIT_SUCCESS);
+}
+
+int main_proc (void)
+{
+    set_interface_attribs (fd, B115200, 0);
+    close(fd);
     std::string mypath;
     std::stringstream ss;
     ss << argv[0];
@@ -53,23 +144,8 @@ int main(int argc, char** argv)
     // Setup termination handler
     chdir(mypath.c_str());
     int res = file_exists("acc.txt");
-    res ? printf("%s exists\n","acc.txt") : printf("File doesn't exist\n");
-    return 0;
-
-/*    DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir ("./")) != NULL) {
-      // print all the files and directories within directory 
-      while ((ent = readdir (dir)) != NULL) {
-        printf ("%s\n", ent->d_name);
-      }
-      closedir (dir);
-    } else {
-      // could not open directory 
-      perror ("");
-      return EXIT_FAILURE;
-    }*/
-    return 0;
+    //res ? printf("%s exists\n","acc.txt") : printf("File doesn't exist\n");
+    //return 0;
 
     main_init();
 
@@ -81,8 +157,7 @@ int main(int argc, char** argv)
     pthread_t thread_output;
     pthread_attr_t attr_main;
     pthread_attr_init(&attr_main);
-    pthread_create(&thread_pic, &attr_main, &tf_pic2netus, NULL);	
-    //pthread_create(&thread_output, &attr_main, &tf_output, NULL);
+    pthread_create(&thread_pic, &attr_main, &tf_pic2netus, NULL);
     printf("FD Pic: %d\n", pic_fd);
     setup_termination();
     struct timeval tvb, tva;
@@ -127,7 +202,7 @@ int main(int argc, char** argv)
     ros::NodeHandle base_handle_("~");
     
     //base_handle_.param("rate", rate, int(40));
-    ros::Subscriber sub = n.subscribe("/saetta1/velocity", 10, &Saetta_Base::listenerCallback, localbase);
+    ros::Subscriber sub = n.subscribe("/saetta/velocity", 10, &Saetta_Base::listenerCallback, localbase);
 
     // Create a new NodeExample object.
     //Saetta_Base *base_node = new Saetta_Base();
@@ -145,7 +220,8 @@ int main(int argc, char** argv)
         
 	counter++;
 	pthread_cond_wait(&cond, &mutex);
-	printf("Alive! [%ld]\n",counter);
+//	printf("Alive! [%ld]\n",counter);
+	printf("Steps\tL:%04.2f\tR:%04.2f\n",robot_state[0],robot_state[1]);
 	pthread_mutex_unlock(&mutex);
 	gettimeofday(&tvb,NULL);
 
@@ -156,7 +232,11 @@ int main(int argc, char** argv)
 
 
 	gettimeofday(&tva,NULL);
-
+	printf("IR Ranger:\n");
+	int i;
+	for (i=0; i<NUM_SENS; i++){
+		printf("S%02d  %04u\n ", i, *(ir->range+i));
+	}
 
 
 	if (tva.tv_sec==tvb.tv_sec){
@@ -181,7 +261,7 @@ int main(int argc, char** argv)
 
     }
 
-    dup2(saved_stdout, STDOUT_FILENO);  /* reconnect stdout for testing */
+//    dup2(saved_stdout, STDOUT_FILENO);  /* reconnect stdout for testing */
     return (EXIT_SUCCESS);
 }
 
@@ -380,67 +460,6 @@ void destroy_win(WINDOW *local_win)
 	delwin(local_win);
 }	
 
-void *tf_output (void *args)
-{
-	saved_stdout = dup(STDOUT_FILENO);  /* save stdout for display later */
-
-	if( pipe(out_pipe) != 0 ) {          /* make a pipe */
-	exit(1);
-	}
-
-	dup2(out_pipe[1], STDOUT_FILENO);   /* redirect stdout to the pipe */
-	close(out_pipe[1]);
-
-	/* anything sent to printf should now go down the pipe */
-	//printf("ceci n'est pas une pipe");
-	//fflush(stdout);
-	WINDOW *my_win, *my_win2;
-	int startx, starty, width, height, origx, origy;
-	int ch, row, col;
-	long cycle=0;
-	initscr();			/* Start curses mode 		*/
-	cbreak();			/* Line buffering disabled, Pass on
-					 * everty thing to me 		*/
-	keypad(stdscr, TRUE);		/* I need that nifty F1 	*/
-	getmaxyx(stdscr,row,col);
-	height = 50;
-	width = 50;
-	//starty = (LINES - height) / 2;	/* Calculating for a center placement */
-	//startx = (COLS - width) / 2;	/* of the window		*/
-	starty=2;
-	startx=2;
-	origx=startx;
-	origy=starty;
-	printw("Press 'q' to exit");
-	refresh();
-	my_win2 = create_newwin(row, col, 0, 0, 0, 0);	
-	wrefresh(my_win2);
-	my_win = create_newwin(row-2, col-2, 1, 1, ' ', ' ');
-	wrefresh(my_win);
-	wprintw(my_win,"The size of this window is %d:%d and it's hooked at X/Y %d/%d\n\n",width,height,startx,starty);
-	wrefresh(my_win);
-	int ok=1;
-	scrollok(my_win,TRUE);
-	long flags = fcntl(out_pipe[0], F_GETFL);
-	flags |= O_NONBLOCK;
-	fcntl(out_pipe[0], F_SETFL, flags);
-	while(ok)
-	{	
-		int res=read(out_pipe[0], buffer, MAX_LEN); /* read from pipe into buffer */
-		if (read>0)
-		{
-			waddstr(my_win,buffer);
-			wrefresh(my_win);
-		}
-		++cycle;
-		mvwprintw(my_win2, 51, 1,"Cycle %6ld",cycle);
-		wrefresh(my_win2);
-		refresh();
-		usleep(5000);
-		}
-		
-	endwin();			/* End curses mode		  */
-}
 
 int file_exists(const char * filename)
 {
