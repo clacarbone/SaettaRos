@@ -48,7 +48,7 @@ int main(int argc, char** argv)
     WINDOW *my_win, *my_win2;
     int cycle = 0, pid, p[2], row, col;
 
-
+#ifdef PROC_SEPARATION
 if(pipe(p) == -1)
 	{
 		perror("pipe call error");
@@ -129,6 +129,7 @@ if(pipe(p) == -1)
 
 int main_proc (int argc, char **argv)
 {
+#endif
     int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
     if (fd < 0)
     {
