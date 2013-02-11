@@ -48,6 +48,12 @@
 #include <termios.h>
 #include <errno.h>
 #include <unistd.h>
+#include <ncurses.h>
+#include <string.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
 
 volatile sig_atomic_t s_interrupted = 0;
 volatile sig_atomic_t alarm_expired = 0;

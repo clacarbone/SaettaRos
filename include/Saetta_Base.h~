@@ -49,6 +49,30 @@
 #include <errno.h>
 #include <unistd.h>
 
+volatile sig_atomic_t s_interrupted = 0;
+volatile sig_atomic_t alarm_expired = 0;
+
+
+static void s_signal_handler (int signal_value)
+{
+	if (signal_value == SIGTERM || signal_value == SIGSTOP || signal_value == SIGINT)
+		s_interrupted = 1;
+	if (signal_value == SIGALRM)
+		//signal(SIGALRM,alarm_wakeup);
+		alarm_expired = 1;
+}
+
+static void s_catch_signals (void)
+{
+	struct sigaction action;
+	action.sa_handler = s_signal_handler;
+	action.sa_flags = 0;
+	sigemptyset (&action.sa_mask);
+	sigaction (SIGINT, &action, NULL);
+	sigaction (SIGTERM, &action, NULL);
+	sigaction (SIGALRM, &action, NULL);
+}
+
 // Custom message includes. Auto-generated from msg/ directory.
 //#include <Saetta_Base/Saetta_Base_data.h>
 
