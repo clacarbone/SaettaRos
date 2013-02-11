@@ -17,7 +17,7 @@ int saved_stdout;
 using namespace std;
 char *portname = "/dev/ttyO3";
 
-int main_proc(void);
+int main_proc(int argc, char **argv);
 
 //using namespace SaettaServerWifi;
 
@@ -72,7 +72,7 @@ if(pipe(p) == -1)
 			}
 			
 			setvbuf(stdout, NULL, _IOLBF, 1000);
-			main_proc();
+			main_proc(argc,argv);
 			printf("\n\tChild quitting cleanly\n\n");
 			break;
 		default:
@@ -130,7 +130,7 @@ if(pipe(p) == -1)
 	return (EXIT_SUCCESS);
 }
 
-int main_proc (void)
+int main_proc (int argc, char **argv)
 {
     set_interface_attribs (fd, B115200, 0);
     close(fd);
