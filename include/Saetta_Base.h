@@ -53,7 +53,6 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <zmq.hpp>
 #include <unistd.h>
 #include <sys/mman.h>
 
