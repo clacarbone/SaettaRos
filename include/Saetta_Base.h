@@ -53,7 +53,9 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
+#include <zmq.hpp>
+#include <unistd.h>
+#include <sys/mman.h>
 
 volatile sig_atomic_t s_interrupted = 0;
 volatile sig_atomic_t alarm_expired = 0;

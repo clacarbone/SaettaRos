@@ -4,7 +4,7 @@
  *
  * Created on December 3, 2012, 4:53 PM
  */
-
+#define PROC_SEPARATION
 #include <cstdlib>
 #include <ros/ros.h>
 //#include "serverWIFI.h"
@@ -32,6 +32,12 @@ void destroy_win(WINDOW *local_win);
 {
     ROS_INFO("Received linear: [%f], angular: [%f]\n", msg->linear.x, msg->angular.z);
 }*/
+
+struct shared_mem {        /* Defines "structure" of shared memory */
+    unsigned int IR[5];
+    float odom[2];
+    int uptodate;
+};
 
 
 void listenerCallback (const turtlesim::Velocity::ConstPtr & msg)
@@ -81,6 +87,31 @@ if(pipe(p) == -1)
 				perror( "dup2 failed" );
 				return(1);
 			}
+			/* Create shared memory object and set its size */
+
+			struct shared_mem *rptr;
+			int shared_mem_fd;
+			shared_mem_fd = shm_open("/saetta_shared_mem", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+			if (shared_mem_fd == -1)
+			    /* Handle error */;
+
+
+			if (ftruncate(shared_mem_fd, sizeof(struct shared_mem)) == -1)
+			    /* Handle error */;
+
+
+			/* Map shared memory object */
+
+
+			rptr = (struct shared_mem*) mmap(NULL, sizeof(struct shared_mem),
+			       PROT_READ | PROT_WRITE, MAP_SHARED, shared_mem_fd, 0);
+			if (rptr == MAP_FAILED)
+			    /* Handle error */;
+
+
+			/* Now we can refer to mapped region using fields of rptr;
+			   for example, rptr->len */
+
 			initscr();				/* start the curses mode */
 			getmaxyx(stdscr,row,col);		/* get the number of rows and columns */
 			mvprintw(row/2,(col-strlen(mesg))/2,"%s",mesg);
@@ -129,6 +160,31 @@ if(pipe(p) == -1)
 
 int main_proc (int argc, char **argv)
 {
+    int cycle=0;
+/* Create shared memory object and set its size */
+
+struct shared_mem *rptr;
+int shared_mem_fd;
+shared_mem_fd = shm_open("/saetta_shared_mem", O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
+if (shared_mem_fd == -1)
+    /* Handle error */;
+
+
+if (ftruncate(shared_mem_fd, sizeof(struct shared_mem)) == -1)
+    /* Handle error */;
+
+
+/* Map shared memory object */
+
+
+rptr = (struct shared_mem*)mmap(NULL, sizeof(struct shared_mem),
+       PROT_READ | PROT_WRITE, MAP_SHARED, shared_mem_fd, 0);
+if (rptr == MAP_FAILED)
+    /* Handle error */;
+
+
+/* Now we can refer to mapped region using fields of rptr;
+   for example, rptr->len */
 #endif
     int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
     if (fd < 0)
@@ -166,7 +222,6 @@ int main_proc (int argc, char **argv)
     setup_termination();
     struct timeval tvb, tva;
 
-    int cycle;
     char debug_buf[24];
     log_fd=open("timing_main.txt",O_CREAT | O_WRONLY | O_TRUNC , S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH);
 
@@ -225,7 +280,7 @@ int main_proc (int argc, char **argv)
 	counter++;
 	pthread_cond_wait(&cond, &mutex);
 //	printf("Alive! [%ld]\n",counter);
-	printf("Steps\tL:%04.2f\tR:%04.2f\n",robot_state[0],robot_state[1]);
+	//printf("Steps\tX:%04.2f\tY:%04.2f\n",robot_state[0],robot_state[1]);
 	pthread_mutex_unlock(&mutex);
 	gettimeofday(&tvb,NULL);
 
@@ -236,13 +291,18 @@ int main_proc (int argc, char **argv)
 
 
 	gettimeofday(&tva,NULL);
-	printf("IR Ranger:\n");
+	//printf("IR Ranger:\n");
 	int i;
 	for (i=0; i<NUM_SENS; i++){
-		printf("S%02d  %04u\n ", i, *(ir->range+i));
+#ifdef PROC_SEPARATION
+		rptr->IR[i]=*(ir->range+i);
+#endif
+		//printf("S%02d  %04u\n", i, *(ir->range+i));
 	}
-
-
+#ifdef PROC_SEPARATION
+	rptr->odom[0]=robot_state[0];
+	rptr->odom[1]=robot_state[1];
+#endif
 	if (tva.tv_sec==tvb.tv_sec){
 	    //printf("%ld\n", tva.tv_usec-tvb.tv_usec);
 #ifdef LOG_FROM_MAIN_THREAD 
