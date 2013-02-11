@@ -16,7 +16,7 @@ int out_pipe[2];
 int saved_stdout;
 using namespace std;
 char *portname = "/dev/ttyO3";
-
+const char mesg[]="Testing stdout redirection";
 int main_proc(int argc, char **argv);
 WINDOW *create_newwin(int height, int width, int starty, int startx, int vert, int horz);
 void destroy_win(WINDOW *local_win);
