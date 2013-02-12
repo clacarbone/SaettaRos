@@ -18,10 +18,15 @@ using namespace std;
 char *portname = "/dev/ttyO3";
 const char mesg[]="Testing stdout redirection";
 int main_proc(int argc, char **argv);
-WINDOW *create_newwin(int height, int width, int starty, int startx, int vert, int horz);
+void pipe_eater(void);
+std::list<std::string> local_messages;
+std::mutex msg_mutex;
 void destroy_win(WINDOW *local_win);
+void curses_windows_setup();
 
-//using namespace SaettaServerWifi;
+#ifdef PROC_SEPARATION
+WINDOW *win_shell, *win_shell_borders, *win_ir_borders, *win_ir;
+#endif
 
 /*------------------------------------------------------------------------------
  * listenerCallback()
@@ -51,7 +56,7 @@ void listenerCallback (const turtlesim::Velocity::ConstPtr & msg)
  *----------------------------------------------------------------------------*/
 int main(int argc, char** argv)
 {
-    WINDOW *my_win, *my_win2;
+    
     int cycle = 0, pid, p[2], row, col;
 
 #ifdef PROC_SEPARATION
@@ -114,36 +119,93 @@ if(pipe(p) == -1)
 
 			initscr();				/* start the curses mode */
 			getmaxyx(stdscr,row,col);		/* get the number of rows and columns */
-			mvprintw(row/2,(col-strlen(mesg))/2,"%s",mesg);
+			//mvprintw(row/2,(col-strlen(mesg))/2,"%s",mesg);
 							/* print the message at the center of the screen */
 
-			refresh();
-			my_win2 = create_newwin(10,col,row-10, 0, 0, 0);	
-			wrefresh(my_win2);
-			my_win = create_newwin(8,col-2,row-9, 1, ' ', ' ');
-			wrefresh(my_win);
-			wprintw(my_win,"This screen has %d rows and %d columns\n",row,col);
-			wprintw(my_win,"Try resizing your window(if possible) and then run this program again\n");
-			scrollok(my_win,TRUE);
+			curses_windows_setup();
+			//refresh();
+			
+			//wprintw(win_shell,"This screen has %d rows and %d columns\n",row,col);
+			//wprintw(win_shell,"Try resizing your window(if possible) and then run this program again\n");
+			scrollok(win_shell,TRUE);
 			int myy,myx;
+			std::thread t(pipe_eater);
 			std::stringstream ss;
+			const char fill_char[] = "|";
 			while(!s_interrupted)
 			{
+				//wmove(win_ir,0,0);
+				for (int i=0; i<5; i++)
+				{
+					mvwprintw(win_ir,i,0,"S%1d: %3u",i,rptr->IR[i]);
+					int maxwidth = col-9-2, width;
+					float fwidth;
+					fwidth = (float)rptr->IR[i] / 255.0;
+					width = maxwidth-(int)(float(maxwidth)*fwidth);
+					for (int j=9; j<col-1; j++)
+					{
+						if(j<col-1-width)
+							mvwprintw(win_ir,i,j," ");
+						else
+							mvwprintw(win_ir,i,j,fill_char);
+					}
+					wrefresh(win_ir);						
+					/*ss.clear();
+					ss << "S" << i << ": " << rptr->IR[i] << std::endl;
+					mystr= ss.str();
+					waddstr(win_ir,mystr.c_str());
+					wmove(win_ir,i,0);*/
+				}
+				wrefresh(win_ir);
+				msg_mutex.lock();
+				while(local_messages.size()>0)
+				{
+
+					//waddstr(win_shell,local_messages.front().c_str());
+
+					wprintw(win_shell, "%s\n",local_messages.front().c_str());
+					local_messages.pop_front();
+				}
+				msg_mutex.unlock();
+				//wprintw(win_shell,"%4d Messages in list: %ld\n",i,local_messages.size());
+				wrefresh(win_shell);
+				//++i;
+				usleep(1000000);
+
+			}
+			t.join();
+			endwin();
+
+			/*while(!s_interrupted)
+			{
+				wmove(win_ir,0,0);
+				for (int i=0; i<5; i++)
+				{
+					mvwprintw(win_ir,i,0,"S%1d: %3u",i,rptr->IR[i]);
+					wrefresh(win_ir);						
+					/*ss.clear();
+					ss << "S" << i << ": " << rptr->IR[i] << std::endl;
+					mystr= ss.str();
+					waddstr(win_ir,mystr.c_str());
+				}
+				wrefresh(win_ir);
 				while( std::getline(std::cin, mystr) )
 				{
 					ss.clear();
 					ss << mystr << std::endl;
 					mystr = ss.str();
 					//std::cout<< mystr<<std::endl;
-					waddstr(my_win,mystr.c_str());
-					wrefresh(my_win);
-					//getyx(my_win,myy,myx);
-					//wmove(my_win,myy+1,0);
+					waddstr(win_shell,mystr.c_str());
+					wrefresh(win_shell);
+					//getyx(win_shell,myy,myx);
+					//wmove(win_shell,myy+1,0);
+
 				}
+
 				usleep(100000);
 
 			}
-			endwin();
+			endwin();*/
 			
 			
 			break;
@@ -186,14 +248,14 @@ if (rptr == MAP_FAILED)
 /* Now we can refer to mapped region using fields of rptr;
    for example, rptr->len */
 #endif
-    int fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
-    if (fd < 0)
+    int myfd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
+    if (myfd < 0)
     {
         printf ("error %d opening %s: %s", errno, portname, strerror (errno));
         return -1;
     }
-    set_interface_attribs (fd, B115200, 0);
-    close(fd);
+    set_interface_attribs (myfd, B115200, 0);
+    close(myfd);
     std::string mypath;
     std::stringstream ss;
     ss << argv[0];
@@ -212,7 +274,7 @@ if (rptr == MAP_FAILED)
     fp_log = fopen(file_log, "w");
     setup_termination();
 
-    pthread_mutex_init(&mutex, NULL);
+    pthread_mutex_init(&tmutex, NULL);
 
     pthread_t thread_output;
     pthread_attr_t attr_main;
@@ -228,8 +290,8 @@ if (rptr == MAP_FAILED)
     // The timing of the first cycle is not allined due to the 
     // fact that the two threads are not setup exactly at the
     // same time
-    pthread_cond_wait(&cond, &mutex);
-    pthread_mutex_unlock(&mutex);		
+    pthread_cond_wait(&cond, &tmutex);
+    pthread_mutex_unlock(&tmutex);		
 
 
 
@@ -278,10 +340,10 @@ if (rptr == MAP_FAILED)
         ros::spinOnce();
         
 	counter++;
-	pthread_cond_wait(&cond, &mutex);
+	pthread_cond_wait(&cond, &tmutex);
 //	printf("Alive! [%ld]\n",counter);
 	//printf("Steps\tX:%04.2f\tY:%04.2f\n",robot_state[0],robot_state[1]);
-	pthread_mutex_unlock(&mutex);
+	pthread_mutex_unlock(&tmutex);
 	gettimeofday(&tvb,NULL);
 
 	//
@@ -358,7 +420,7 @@ void termination_handler(int signum) {
     int i;
 
 
-    pthread_mutex_destroy(&mutex);  
+    pthread_mutex_destroy(&tmutex);  
     pthread_cancel(thread_pic);
 
     // Clean the bufffer	
@@ -536,4 +598,52 @@ int file_exists(const char * filename)
     return 0;
 }
 
+void curses_windows_setup()
+{
+#ifdef PROC_SEPARATION
+	#define IR_X_POS 0
+	#define IR_Y_POS 0
+	#define IR_X_LENGTH 
+	#define IR_Y_LENGTH 7
+	#define SHELL_X_POS 0
+	#define SHELL_Y_POS
+	#define SHELL_X_LENGTH
+	#define SHELL_Y_LENGTH 10
+	#define WIN_SPACE 2
+	int row,col;
+	getmaxyx(stdscr,row,col);
 
+	win_ir_borders = create_newwin( IR_Y_LENGTH, col, IR_Y_POS, IR_X_POS, 0, 0);
+	wrefresh(win_ir_borders);
+	win_ir = create_newwin( IR_Y_LENGTH-2, col-2, IR_Y_POS+1, IR_X_POS+1, ' ', ' ');
+	wrefresh(win_ir);
+
+	int shell_y_length = SHELL_Y_LENGTH, shell_y_pos = IR_Y_POS+IR_Y_LENGTH+WIN_SPACE;
+	if (SHELL_Y_LENGTH > row-IR_Y_LENGTH-WIN_SPACE)
+		shell_y_length = row-IR_Y_LENGTH-WIN_SPACE;
+	else
+		shell_y_length = SHELL_Y_LENGTH;
+	
+	win_shell_borders = create_newwin(shell_y_length,col,shell_y_pos, SHELL_X_POS, 0, 0);	
+	wrefresh(win_shell_borders);
+	win_shell = create_newwin(shell_y_length-2,col-2,shell_y_pos+1, SHELL_X_POS+1, ' ', ' ');
+	wrefresh(win_shell);	
+
+	mvwprintw(win_ir_borders,0,col/2-1,"IRs");
+	wrefresh(win_ir_borders);
+#endif
+}
+
+void pipe_eater (void)
+{
+	std::string mystr;
+	std::stringstream ss;
+	while(1){
+	while( std::getline(std::cin, mystr) )
+	{
+		msg_mutex.lock();
+		local_messages.push_back(mystr);
+		msg_mutex.unlock();
+
+	}}
+}
