@@ -3,13 +3,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#define		PIC_LOG_TO_SCREEN	1
+#define		PIC_LOG_TO_SCREEN	0
 #include "serial_comm.h"
 #include "pic_rel.h"
 #include "robot_core.h"
 #include "sensor_struct.h"
 
-#define		PIC_PACKET_SCREEN_LOG	1
+#define		PIC_PACKET_SCREEN_LOG	0
 ///\brief	flag for a corrupted packet just analyzed
 #define 	ERROR_PACKET_ANALYZED	0
 ///\brief	flag for a start packet just analyzed

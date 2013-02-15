@@ -38,11 +38,19 @@
 
 #ifndef SAETTA_BASE_H
 #define SAETTA_BASE_H
-#define PIC_LOG_TO_SCREEN 1
+#include <cstdlib>
+#include <iostream>
+#include <utility>
+#include <sstream>
+#include <thread>
+#include <mutex>
+#include <list>
+
 //#include "serverWIFI.h"
 // ROS includes.
 #include "ros/ros.h"
 #include "ros/time.h"
+#include <tf/transform_broadcaster.h>
 #include <geometry_msgs/Twist.h>
 #include <turtlesim/Velocity.h>
 #include <termios.h>
@@ -98,8 +106,7 @@ static void s_catch_signals (void)
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <iostream>
-#include <sstream>
+
 typedef const turtlesim::Velocity::ConstPtr _local_msgtype;
 
 using std::string;
@@ -174,7 +181,7 @@ class Saetta_Base
 
 unsigned char 	c;
 
-char 		file_log[20]="acc.txt";
+char 		file_log[100]="/home/panda/.ros/saetta_base/acc.txt";
 float		*robot_state=NULL;
 struct timeval  *tempi=NULL;
 //===================
@@ -186,7 +193,7 @@ float w_xbee=0,v_xbee=0;
 pthread_t	thread_main;
 pthread_t	thread_pic;
 pthread_cond_t  cond;
-pthread_mutex_t  mutex;
+pthread_mutex_t  tmutex;
 int log_fd;
 int pic_log_fd;
 
@@ -207,7 +214,7 @@ set_interface_attribs (int fd, int speed, int parity)
         tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
         // disable IGNBRK for mismatched speed tests; otherwise receive break
         // as \000 chars
-        tty.c_iflag &= ~IGNBRK;         // ignore break signal
+        /*tty.c_iflag &= ~IGNBRK;         // ignore break signal
         tty.c_lflag = 0;                // no signaling chars, no echo,
                                         // no canonical processing
         tty.c_oflag = 0;                // no remapping, no delays
@@ -221,7 +228,7 @@ set_interface_attribs (int fd, int speed, int parity)
         tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
         tty.c_cflag |= parity;
         tty.c_cflag &= ~CSTOPB;
-        tty.c_cflag &= ~CRTSCTS;
+        tty.c_cflag &= ~CRTSCTS;*/
 
         if (tcsetattr (fd, TCSANOW, &tty) != 0)
         {

@@ -12,7 +12,7 @@
 #define KEYCODE_U 0x41
 #define KEYCODE_D 0x42
 #define KEYCODE_Q 0x71
-#define COEFF 0.95
+#define COEFF 0.8
     
 
 
@@ -81,8 +81,8 @@ void TeleopSaetta::keyLoop()
 {
         turtlesim::Velocity vel;
         JoystickLoop();
-	command_turn = command_turn*command_turn;
-	command_vel = command_vel * command_vel;
+	command_turn = copysign(pow(command_turn,2),command_turn);
+	command_vel = copysign(pow(command_vel,2),command_vel);
         vel.angular=2*command_turn;
         vel.linear=25*command_vel;
         if (vel.linear >= -0.3 && vel.linear <= 0.3)

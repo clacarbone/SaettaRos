@@ -102,7 +102,7 @@ void Saetta_Base::processData(_local_msgtype & msg)
     this->_linear = msg->linear;
     this->_angular = msg->angular;
     this->_uptodate = true;
-    set_robot_speed(&(this->_linear),&((this->_angular));
+    set_robot_speed(&(this->_linear),&(this->_angular));
 
 
     //this->SendWifiSpeed();

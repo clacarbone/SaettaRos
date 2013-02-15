@@ -12,7 +12,7 @@
 #define KEYCODE_U 0x41
 #define KEYCODE_D 0x42
 #define KEYCODE_Q 0x71
-#define COEFF 0.98
+#define COEFF 0.9
     
 
 
@@ -40,7 +40,7 @@ TeleopSaetta::TeleopSaetta():
   nh_.param("scale_angular", a_scale_, a_scale_);
   nh_.param("scale_linear", l_scale_, l_scale_);
 
-  vel_pub_ = nh_.advertise<turtlesim::Velocity>("/saetta1/velocity", 1);
+  vel_pub_ = nh_.advertise<turtlesim::Velocity>("/saetta/velocity", 1);
 }
 
 
@@ -81,15 +81,17 @@ void TeleopSaetta::keyLoop()
 {
         turtlesim::Velocity vel;
         JoystickLoop();
-        vel.angular=1*command_turn;
-        vel.linear=1*command_vel;
-        if (vel.linear <= 0.3 && vel.linear >= -0.3)
-            vel.linear = 0;
-        if (vel.angular <= 0.3 && vel.angular >= -0.3)
-            vel.angular = 0;
+	command_turn = copysign(pow(command_turn,2),command_turn);
+	command_vel = copysign(pow(command_vel,2),command_vel);
+        vel.angular=2*command_turn;
+        vel.linear=25*command_vel;
+        if (vel.linear >= -0.3 && vel.linear <= 0.3)
+            vel.linear = 0.0;
+        if (vel.angular >= -0.3 && vel.angular <= 0.3)
+            vel.angular = 0.0;
         
-        ROS_INFO("JoyValue: %3.2f  %3.2f\n",vel.linear,vel.angular);
         vel_pub_.publish(vel);
+        ROS_INFO("JoyValue: %3.2f  %3.2f",vel.linear,vel.angular);
     
 
  }

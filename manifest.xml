@@ -14,6 +14,7 @@ to the platform via standard ROS cmd_vel messages.
   <depend package="geometry_msgs" />
   <depend package="dynamic_reconfigure" />
   <depend package="driver_base" />
+  <depend package="tf" />
 </package>
 
 
