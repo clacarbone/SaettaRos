@@ -391,6 +391,10 @@ if (rptr == MAP_FAILED)
 #else
 	for (i=0; i<NUM_SENS; i++)
 		printf("S%02d  %04u\n", i, *(ir->range+i));
+        transform.setOrigin( tf::Vector3(robot_state[0]/100, robot_state[1]/100, 0.0) );
+        transform.setRotation( tf::Quaternion(0, 0, robot_state[3]) );
+        br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "base_link"));
+        printf("Transform sent!\n");
 
 #endif
 	if (tva.tv_sec==tvb.tv_sec)
