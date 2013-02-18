@@ -39,10 +39,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = .
+CMAKE_SOURCE_DIR = /home/erupter/Apps/ROS/Saetta/saetta_msgs
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = .
+CMAKE_BINARY_DIR = /home/erupter/Apps/ROS/Saetta/saetta_msgs
 
 #=============================================================================
 # Targets provided globally by CMake.

@@ -1,4 +1,4 @@
-(cl:in-package Messages-msg)
+(cl:in-package saetta_msgs-msg)
 (cl:export '(X_POSITION-VAL
           X_POSITION
           Y_POSITION-VAL

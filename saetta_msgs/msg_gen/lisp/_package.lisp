@@ -1,4 +1,4 @@
-(cl:defpackage Messages-msg
+(cl:defpackage saetta_msgs-msg
   (:use )
   (:export
    "<CMD_VEL>"

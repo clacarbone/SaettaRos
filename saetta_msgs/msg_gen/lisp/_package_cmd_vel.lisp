@@ -1,4 +1,4 @@
-(cl:in-package Messages-msg)
+(cl:in-package saetta_msgs-msg)
 (cl:export '(LINEAR-VAL
           LINEAR
           ANGULAR-VAL
