@@ -1,0 +1,16 @@
+<package>
+  <description brief="Saetta_Messages">
+Saetta_Messages contains message definitions used throughout the whole Saetta Project.
+  </description>
+  <author>Claudio Carbone</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <export>
+    <cpp cflags="-I${prefix}/msg/cpp/include"/>
+  </export>
+</package>
+
+

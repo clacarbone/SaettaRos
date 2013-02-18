@@ -1,0 +1,11 @@
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+/RosVisionSystem
+*/nbproject
+*/build
+*/bin
+*/lib
+*~
+*.save
+Map.txt
