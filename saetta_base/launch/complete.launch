@@ -49,7 +49,7 @@
 		<node pkg="robot_state_publisher" type="state_publisher" name="robot_1_state_publisher"/>		
 
 		<!-- Saetta Nodes -->
-		<node pkg="Saetta_Base" type="base" name="SaettaBase01" machine="Panda01">
+		<node pkg="saetta_base" type="base" name="SaettaBase01" machine="Panda01">
 			<remap from="/saetta/velocity" to="cmd_vel"/>
 		</node>
 
