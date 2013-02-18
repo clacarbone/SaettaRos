@@ -7,7 +7,6 @@
   <review status="unreviewed" notes=""/>
   <url></url>
   <depend stack="common_msgs" /> <!-- sensor_msgs -->
-  <depend stack="hokuyo" /> <!-- self_test, diagnostic_updater -->
   <depend stack="vision_opencv" />
   <depend stack="driver_common" /> <!-- dynamic_reconfigure, driver_base -->
   <depend stack="ros" />
