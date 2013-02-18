@@ -7,7 +7,7 @@
 
 #ifndef JOYSTICK_H
 #define	JOYSTICK_H
-
+#define COEFF	0.5
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -23,8 +23,6 @@ extern int NoJoy,
     button_debouncingdown[4];
 extern long button_interdiction[4];
 extern SDL_Joystick *mystick;    
-
-#define COEFF 0.5
 
 void initJoy (void);
 void JoystickLoop(void);

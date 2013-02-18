@@ -328,7 +328,6 @@ if (rptr == MAP_FAILED)
 
     // Declare variables that can be modified by launch file or command line.
     int rate = 20;
-    const char *ip = "192.168.1.57";
 
     
 //    localbase->InitWifi(ip);
