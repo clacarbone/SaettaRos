@@ -92,7 +92,7 @@ static void s_catch_signals (void)
 //#include <Saetta_Base/Saetta_Base_data.h>
 
 // Dynamic reconfigure includes.
-#include <dynamic_reconfigure/server.h>
+//#include <dynamic_reconfigure/server.h>
 // Auto-generated from cfg/ directory.
 //#include <Saetta_Base/Saetta_Base_paramsConfig.h>
 #include <signal.h>

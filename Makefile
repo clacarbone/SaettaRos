@@ -39,10 +39,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/panda/ROS_WORKSPACE/Saetta_Base
+CMAKE_SOURCE_DIR = /home/erupter/Apps/ROS/Saetta_Base
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/panda/ROS_WORKSPACE/Saetta_Base
+CMAKE_BINARY_DIR = /home/erupter/Apps/ROS/Saetta_Base
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,9 +69,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/panda/ROS_WORKSPACE/Saetta_Base/CMakeFiles /home/panda/ROS_WORKSPACE/Saetta_Base/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/erupter/Apps/ROS/Saetta_Base/CMakeFiles /home/erupter/Apps/ROS/Saetta_Base/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/panda/ROS_WORKSPACE/Saetta_Base/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/erupter/Apps/ROS/Saetta_Base/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -97,19 +97,6 @@ preinstall/fast:
 depend:
 	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
-
-#=============================================================================
-# Target rules for targets named ROSBUILD_gencfg_cpp
-
-# Build rule for target.
-ROSBUILD_gencfg_cpp: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ROSBUILD_gencfg_cpp
-.PHONY : ROSBUILD_gencfg_cpp
-
-# fast build rule for target.
-ROSBUILD_gencfg_cpp/fast:
-	$(MAKE) -f CMakeFiles/ROSBUILD_gencfg_cpp.dir/build.make CMakeFiles/ROSBUILD_gencfg_cpp.dir/build
-.PHONY : ROSBUILD_gencfg_cpp/fast
 
 #=============================================================================
 # Target rules for targets named ROSBUILD_genmsg_cpp
@@ -305,32 +292,6 @@ rosbuild_premsgsrvgen: cmake_check_build_system
 rosbuild_premsgsrvgen/fast:
 	$(MAKE) -f CMakeFiles/rosbuild_premsgsrvgen.dir/build.make CMakeFiles/rosbuild_premsgsrvgen.dir/build
 .PHONY : rosbuild_premsgsrvgen/fast
-
-#=============================================================================
-# Target rules for targets named rospack_gencfg
-
-# Build rule for target.
-rospack_gencfg: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 rospack_gencfg
-.PHONY : rospack_gencfg
-
-# fast build rule for target.
-rospack_gencfg/fast:
-	$(MAKE) -f CMakeFiles/rospack_gencfg.dir/build.make CMakeFiles/rospack_gencfg.dir/build
-.PHONY : rospack_gencfg/fast
-
-#=============================================================================
-# Target rules for targets named rospack_gencfg_real
-
-# Build rule for target.
-rospack_gencfg_real: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 rospack_gencfg_real
-.PHONY : rospack_gencfg_real
-
-# fast build rule for target.
-rospack_gencfg_real/fast:
-	$(MAKE) -f CMakeFiles/rospack_gencfg_real.dir/build.make CMakeFiles/rospack_gencfg_real.dir/build
-.PHONY : rospack_gencfg_real/fast
 
 #=============================================================================
 # Target rules for targets named rospack_genmsg
@@ -646,7 +607,6 @@ help:
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
-	@echo "... ROSBUILD_gencfg_cpp"
 	@echo "... ROSBUILD_genmsg_cpp"
 	@echo "... ROSBUILD_genmsg_lisp"
 	@echo "... ROSBUILD_gensrv_cpp"
@@ -664,8 +624,6 @@ help:
 	@echo "... robotcore"
 	@echo "... rosbuild_precompile"
 	@echo "... rosbuild_premsgsrvgen"
-	@echo "... rospack_gencfg"
-	@echo "... rospack_gencfg_real"
 	@echo "... rospack_genmsg"
 	@echo "... rospack_genmsg_libexe"
 	@echo "... rospack_gensrv"
