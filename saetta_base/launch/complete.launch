@@ -7,6 +7,7 @@
 
 	<!-- Global Parameters -->
 	<param name="saetta_vision_prefix" value="robot_"/>
+	<param name="saetta_vision_robnum" value="15" />
 	
 <!--	<node pkg="tf" type="static_transform_publisher" name="tf_static_laser" args="0 0 0 0 0 0 world generic_laser 10" /> -->
 
