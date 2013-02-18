@@ -51,7 +51,7 @@
 #include "ros/ros.h"
 #include "ros/time.h"
 #include <tf/transform_broadcaster.h>
-#include <Saetta_Messages/cmd_vel.h>
+#include <saetta_msgs/cmd_vel.h>
 #include <termios.h>
 #include <errno.h>
 #include <unistd.h>
@@ -106,7 +106,7 @@ static void s_catch_signals (void)
 #include <stdlib.h>
 #include <pthread.h>
 
-typedef const Saetta_Messages::cmd_vel::ConstPtr _local_msgtype;
+typedef const saetta_msgs::cmd_vel::ConstPtr _local_msgtype;
 
 using std::string;
 

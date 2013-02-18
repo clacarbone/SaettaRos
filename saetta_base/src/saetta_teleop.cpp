@@ -1,5 +1,5 @@
 #include <ros/ros.h>
-#include <turtlesim/Velocity.h>
+#include <saetta_msgs/cmd_vel.h>
 #include <signal.h>
 #include <termios.h>
 #include <stdio.h>
@@ -12,7 +12,6 @@
 #define KEYCODE_U 0x41
 #define KEYCODE_D 0x42
 #define KEYCODE_Q 0x71
-#define COEFF 0.8
     
 
 
@@ -40,7 +39,7 @@ TeleopSaetta::TeleopSaetta():
   nh_.param("scale_angular", a_scale_, a_scale_);
   nh_.param("scale_linear", l_scale_, l_scale_);
 
-  vel_pub_ = nh_.advertise<turtlesim::Velocity>("/saetta/velocity", 1);
+  vel_pub_ = nh_.advertise<saetta_msgs::cmd_vel>("/saetta/velocity", 1);
 }
 
 
@@ -79,7 +78,7 @@ int main(int argc, char** argv)
 
 void TeleopSaetta::keyLoop()
 {
-        turtlesim::Velocity vel;
+        saetta_msgs::cmd_vel vel;
         JoystickLoop();
 	command_turn = copysign(pow(command_turn,2),command_turn);
 	command_vel = copysign(pow(command_vel,2),command_vel);
