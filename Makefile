@@ -138,19 +138,6 @@ ROSBUILD_genmsg_lisp/fast:
 .PHONY : ROSBUILD_genmsg_lisp/fast
 
 #=============================================================================
-# Target rules for targets named ROSBUILD_genmsg_py
-
-# Build rule for target.
-ROSBUILD_genmsg_py: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 ROSBUILD_genmsg_py
-.PHONY : ROSBUILD_genmsg_py
-
-# fast build rule for target.
-ROSBUILD_genmsg_py/fast:
-	$(MAKE) -f CMakeFiles/ROSBUILD_genmsg_py.dir/build.make CMakeFiles/ROSBUILD_genmsg_py.dir/build
-.PHONY : ROSBUILD_genmsg_py/fast
-
-#=============================================================================
 # Target rules for targets named ROSBUILD_gensrv_cpp
 
 # Build rule for target.
@@ -489,96 +476,6 @@ tests/fast:
 .PHONY : tests/fast
 
 # target to build an object file
-ausiliarie/funzioni_ausiliarie.o:
-	$(MAKE) -f CMakeFiles/ausiliarie.dir/build.make CMakeFiles/ausiliarie.dir/ausiliarie/funzioni_ausiliarie.o
-.PHONY : ausiliarie/funzioni_ausiliarie.o
-
-# target to preprocess a source file
-ausiliarie/funzioni_ausiliarie.i:
-	$(MAKE) -f CMakeFiles/ausiliarie.dir/build.make CMakeFiles/ausiliarie.dir/ausiliarie/funzioni_ausiliarie.i
-.PHONY : ausiliarie/funzioni_ausiliarie.i
-
-# target to generate assembly for a file
-ausiliarie/funzioni_ausiliarie.s:
-	$(MAKE) -f CMakeFiles/ausiliarie.dir/build.make CMakeFiles/ausiliarie.dir/ausiliarie/funzioni_ausiliarie.s
-.PHONY : ausiliarie/funzioni_ausiliarie.s
-
-# target to build an object file
-core/pic2netus.o:
-	$(MAKE) -f CMakeFiles/pic2netus.dir/build.make CMakeFiles/pic2netus.dir/core/pic2netus.o
-.PHONY : core/pic2netus.o
-
-# target to preprocess a source file
-core/pic2netus.i:
-	$(MAKE) -f CMakeFiles/pic2netus.dir/build.make CMakeFiles/pic2netus.dir/core/pic2netus.i
-.PHONY : core/pic2netus.i
-
-# target to generate assembly for a file
-core/pic2netus.s:
-	$(MAKE) -f CMakeFiles/pic2netus.dir/build.make CMakeFiles/pic2netus.dir/core/pic2netus.s
-.PHONY : core/pic2netus.s
-
-# target to build an object file
-core/robot_core.o:
-	$(MAKE) -f CMakeFiles/robotcore.dir/build.make CMakeFiles/robotcore.dir/core/robot_core.o
-.PHONY : core/robot_core.o
-
-# target to preprocess a source file
-core/robot_core.i:
-	$(MAKE) -f CMakeFiles/robotcore.dir/build.make CMakeFiles/robotcore.dir/core/robot_core.i
-.PHONY : core/robot_core.i
-
-# target to generate assembly for a file
-core/robot_core.s:
-	$(MAKE) -f CMakeFiles/robotcore.dir/build.make CMakeFiles/robotcore.dir/core/robot_core.s
-.PHONY : core/robot_core.s
-
-# target to build an object file
-netus2pic/robot_comm.o:
-	$(MAKE) -f CMakeFiles/robot_comm.dir/build.make CMakeFiles/robot_comm.dir/netus2pic/robot_comm.o
-.PHONY : netus2pic/robot_comm.o
-
-# target to preprocess a source file
-netus2pic/robot_comm.i:
-	$(MAKE) -f CMakeFiles/robot_comm.dir/build.make CMakeFiles/robot_comm.dir/netus2pic/robot_comm.i
-.PHONY : netus2pic/robot_comm.i
-
-# target to generate assembly for a file
-netus2pic/robot_comm.s:
-	$(MAKE) -f CMakeFiles/robot_comm.dir/build.make CMakeFiles/robot_comm.dir/netus2pic/robot_comm.s
-.PHONY : netus2pic/robot_comm.s
-
-# target to build an object file
-netus2pic/serial_comm.o:
-	$(MAKE) -f CMakeFiles/serial_comm.dir/build.make CMakeFiles/serial_comm.dir/netus2pic/serial_comm.o
-.PHONY : netus2pic/serial_comm.o
-
-# target to preprocess a source file
-netus2pic/serial_comm.i:
-	$(MAKE) -f CMakeFiles/serial_comm.dir/build.make CMakeFiles/serial_comm.dir/netus2pic/serial_comm.i
-.PHONY : netus2pic/serial_comm.i
-
-# target to generate assembly for a file
-netus2pic/serial_comm.s:
-	$(MAKE) -f CMakeFiles/serial_comm.dir/build.make CMakeFiles/serial_comm.dir/netus2pic/serial_comm.s
-.PHONY : netus2pic/serial_comm.s
-
-# target to build an object file
-sensor/robot_sensors.o:
-	$(MAKE) -f CMakeFiles/robot_sensors.dir/build.make CMakeFiles/robot_sensors.dir/sensor/robot_sensors.o
-.PHONY : sensor/robot_sensors.o
-
-# target to preprocess a source file
-sensor/robot_sensors.i:
-	$(MAKE) -f CMakeFiles/robot_sensors.dir/build.make CMakeFiles/robot_sensors.dir/sensor/robot_sensors.i
-.PHONY : sensor/robot_sensors.i
-
-# target to generate assembly for a file
-sensor/robot_sensors.s:
-	$(MAKE) -f CMakeFiles/robot_sensors.dir/build.make CMakeFiles/robot_sensors.dir/sensor/robot_sensors.s
-.PHONY : sensor/robot_sensors.s
-
-# target to build an object file
 src/Saetta_Base_core.o:
 	$(MAKE) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/Saetta_Base_core.o
 .PHONY : src/Saetta_Base_core.o
@@ -592,6 +489,21 @@ src/Saetta_Base_core.i:
 src/Saetta_Base_core.s:
 	$(MAKE) -f CMakeFiles/core.dir/build.make CMakeFiles/core.dir/src/Saetta_Base_core.s
 .PHONY : src/Saetta_Base_core.s
+
+# target to build an object file
+src/ausiliarie/funzioni_ausiliarie.o:
+	$(MAKE) -f CMakeFiles/ausiliarie.dir/build.make CMakeFiles/ausiliarie.dir/src/ausiliarie/funzioni_ausiliarie.o
+.PHONY : src/ausiliarie/funzioni_ausiliarie.o
+
+# target to preprocess a source file
+src/ausiliarie/funzioni_ausiliarie.i:
+	$(MAKE) -f CMakeFiles/ausiliarie.dir/build.make CMakeFiles/ausiliarie.dir/src/ausiliarie/funzioni_ausiliarie.i
+.PHONY : src/ausiliarie/funzioni_ausiliarie.i
+
+# target to generate assembly for a file
+src/ausiliarie/funzioni_ausiliarie.s:
+	$(MAKE) -f CMakeFiles/ausiliarie.dir/build.make CMakeFiles/ausiliarie.dir/src/ausiliarie/funzioni_ausiliarie.s
+.PHONY : src/ausiliarie/funzioni_ausiliarie.s
 
 # target to build an object file
 src/base.o:
@@ -609,6 +521,36 @@ src/base.s:
 .PHONY : src/base.s
 
 # target to build an object file
+src/core/pic2netus.o:
+	$(MAKE) -f CMakeFiles/pic2netus.dir/build.make CMakeFiles/pic2netus.dir/src/core/pic2netus.o
+.PHONY : src/core/pic2netus.o
+
+# target to preprocess a source file
+src/core/pic2netus.i:
+	$(MAKE) -f CMakeFiles/pic2netus.dir/build.make CMakeFiles/pic2netus.dir/src/core/pic2netus.i
+.PHONY : src/core/pic2netus.i
+
+# target to generate assembly for a file
+src/core/pic2netus.s:
+	$(MAKE) -f CMakeFiles/pic2netus.dir/build.make CMakeFiles/pic2netus.dir/src/core/pic2netus.s
+.PHONY : src/core/pic2netus.s
+
+# target to build an object file
+src/core/robot_core.o:
+	$(MAKE) -f CMakeFiles/robotcore.dir/build.make CMakeFiles/robotcore.dir/src/core/robot_core.o
+.PHONY : src/core/robot_core.o
+
+# target to preprocess a source file
+src/core/robot_core.i:
+	$(MAKE) -f CMakeFiles/robotcore.dir/build.make CMakeFiles/robotcore.dir/src/core/robot_core.i
+.PHONY : src/core/robot_core.i
+
+# target to generate assembly for a file
+src/core/robot_core.s:
+	$(MAKE) -f CMakeFiles/robotcore.dir/build.make CMakeFiles/robotcore.dir/src/core/robot_core.s
+.PHONY : src/core/robot_core.s
+
+# target to build an object file
 src/joystick.o:
 	$(MAKE) -f CMakeFiles/joystick.dir/build.make CMakeFiles/joystick.dir/src/joystick.o
 .PHONY : src/joystick.o
@@ -624,6 +566,36 @@ src/joystick.s:
 .PHONY : src/joystick.s
 
 # target to build an object file
+src/netus2pic/robot_comm.o:
+	$(MAKE) -f CMakeFiles/robot_comm.dir/build.make CMakeFiles/robot_comm.dir/src/netus2pic/robot_comm.o
+.PHONY : src/netus2pic/robot_comm.o
+
+# target to preprocess a source file
+src/netus2pic/robot_comm.i:
+	$(MAKE) -f CMakeFiles/robot_comm.dir/build.make CMakeFiles/robot_comm.dir/src/netus2pic/robot_comm.i
+.PHONY : src/netus2pic/robot_comm.i
+
+# target to generate assembly for a file
+src/netus2pic/robot_comm.s:
+	$(MAKE) -f CMakeFiles/robot_comm.dir/build.make CMakeFiles/robot_comm.dir/src/netus2pic/robot_comm.s
+.PHONY : src/netus2pic/robot_comm.s
+
+# target to build an object file
+src/netus2pic/serial_comm.o:
+	$(MAKE) -f CMakeFiles/serial_comm.dir/build.make CMakeFiles/serial_comm.dir/src/netus2pic/serial_comm.o
+.PHONY : src/netus2pic/serial_comm.o
+
+# target to preprocess a source file
+src/netus2pic/serial_comm.i:
+	$(MAKE) -f CMakeFiles/serial_comm.dir/build.make CMakeFiles/serial_comm.dir/src/netus2pic/serial_comm.i
+.PHONY : src/netus2pic/serial_comm.i
+
+# target to generate assembly for a file
+src/netus2pic/serial_comm.s:
+	$(MAKE) -f CMakeFiles/serial_comm.dir/build.make CMakeFiles/serial_comm.dir/src/netus2pic/serial_comm.s
+.PHONY : src/netus2pic/serial_comm.s
+
+# target to build an object file
 src/saetta_teleop.o:
 	$(MAKE) -f CMakeFiles/teleop_saetta.dir/build.make CMakeFiles/teleop_saetta.dir/src/saetta_teleop.o
 .PHONY : src/saetta_teleop.o
@@ -637,6 +609,21 @@ src/saetta_teleop.i:
 src/saetta_teleop.s:
 	$(MAKE) -f CMakeFiles/teleop_saetta.dir/build.make CMakeFiles/teleop_saetta.dir/src/saetta_teleop.s
 .PHONY : src/saetta_teleop.s
+
+# target to build an object file
+src/sensor/robot_sensors.o:
+	$(MAKE) -f CMakeFiles/robot_sensors.dir/build.make CMakeFiles/robot_sensors.dir/src/sensor/robot_sensors.o
+.PHONY : src/sensor/robot_sensors.o
+
+# target to preprocess a source file
+src/sensor/robot_sensors.i:
+	$(MAKE) -f CMakeFiles/robot_sensors.dir/build.make CMakeFiles/robot_sensors.dir/src/sensor/robot_sensors.i
+.PHONY : src/sensor/robot_sensors.i
+
+# target to generate assembly for a file
+src/sensor/robot_sensors.s:
+	$(MAKE) -f CMakeFiles/robot_sensors.dir/build.make CMakeFiles/robot_sensors.dir/src/sensor/robot_sensors.s
+.PHONY : src/sensor/robot_sensors.s
 
 # target to build an object file
 src/shellgui.o:
@@ -662,7 +649,6 @@ help:
 	@echo "... ROSBUILD_gencfg_cpp"
 	@echo "... ROSBUILD_genmsg_cpp"
 	@echo "... ROSBUILD_genmsg_lisp"
-	@echo "... ROSBUILD_genmsg_py"
 	@echo "... ROSBUILD_gensrv_cpp"
 	@echo "... ROSBUILD_gensrv_lisp"
 	@echo "... ausiliarie"
@@ -691,36 +677,36 @@ help:
 	@echo "... test-results"
 	@echo "... test-results-run"
 	@echo "... tests"
-	@echo "... ausiliarie/funzioni_ausiliarie.o"
-	@echo "... ausiliarie/funzioni_ausiliarie.i"
-	@echo "... ausiliarie/funzioni_ausiliarie.s"
-	@echo "... core/pic2netus.o"
-	@echo "... core/pic2netus.i"
-	@echo "... core/pic2netus.s"
-	@echo "... core/robot_core.o"
-	@echo "... core/robot_core.i"
-	@echo "... core/robot_core.s"
-	@echo "... netus2pic/robot_comm.o"
-	@echo "... netus2pic/robot_comm.i"
-	@echo "... netus2pic/robot_comm.s"
-	@echo "... netus2pic/serial_comm.o"
-	@echo "... netus2pic/serial_comm.i"
-	@echo "... netus2pic/serial_comm.s"
-	@echo "... sensor/robot_sensors.o"
-	@echo "... sensor/robot_sensors.i"
-	@echo "... sensor/robot_sensors.s"
 	@echo "... src/Saetta_Base_core.o"
 	@echo "... src/Saetta_Base_core.i"
 	@echo "... src/Saetta_Base_core.s"
+	@echo "... src/ausiliarie/funzioni_ausiliarie.o"
+	@echo "... src/ausiliarie/funzioni_ausiliarie.i"
+	@echo "... src/ausiliarie/funzioni_ausiliarie.s"
 	@echo "... src/base.o"
 	@echo "... src/base.i"
 	@echo "... src/base.s"
+	@echo "... src/core/pic2netus.o"
+	@echo "... src/core/pic2netus.i"
+	@echo "... src/core/pic2netus.s"
+	@echo "... src/core/robot_core.o"
+	@echo "... src/core/robot_core.i"
+	@echo "... src/core/robot_core.s"
 	@echo "... src/joystick.o"
 	@echo "... src/joystick.i"
 	@echo "... src/joystick.s"
+	@echo "... src/netus2pic/robot_comm.o"
+	@echo "... src/netus2pic/robot_comm.i"
+	@echo "... src/netus2pic/robot_comm.s"
+	@echo "... src/netus2pic/serial_comm.o"
+	@echo "... src/netus2pic/serial_comm.i"
+	@echo "... src/netus2pic/serial_comm.s"
 	@echo "... src/saetta_teleop.o"
 	@echo "... src/saetta_teleop.i"
 	@echo "... src/saetta_teleop.s"
+	@echo "... src/sensor/robot_sensors.o"
+	@echo "... src/sensor/robot_sensors.i"
+	@echo "... src/sensor/robot_sensors.s"
 	@echo "... src/shellgui.o"
 	@echo "... src/shellgui.i"
 	@echo "... src/shellgui.s"

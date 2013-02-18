@@ -1347,6 +1347,7 @@ int analizza_pacchetto(unsigned char *buf,int buffer_size)
 						state[STATE_X] += delta_state[STATE_X];
 						state[STATE_Y] += delta_state[STATE_Y];
 						state[STATE_THETA] += delta_state[STATE_THETA];
+						//printf("Delta theta = %6.2f\nTheta: %6.2f\n", delta_state[STATE_THETA], state[STATE_THETA]);
 						if (state[STATE_THETA] > M_PI)
 						{
 							state[STATE_THETA] -= (2 * M_PI);

@@ -383,17 +383,19 @@ if (rptr == MAP_FAILED)
 		rptr->odom[0]=robot_state[0];
 		rptr->odom[1]=robot_state[1];
 		transform.setOrigin( tf::Vector3(robot_state[0]/100, robot_state[1]/100, 0.0) );
-		transform.setRotation( tf::Quaternion(0, 0, robot_state[3]) );
+		transform.setRotation( tf::Quaternion(0, 0, robot_state[2]) );
 		struct_mutex.unlock();
 		br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "base_link"));
 		printf("Transform sent!\n");
 	}
 #else
+	printf("\n\n");
 	for (i=0; i<NUM_SENS; i++)
 		printf("S%02d  %04u\n", i, *(ir->range+i));
         transform.setOrigin( tf::Vector3(robot_state[0]/100, robot_state[1]/100, 0.0) );
-        transform.setRotation( tf::Quaternion(0, 0, robot_state[3]) );
+        transform.setRotation( tf::Quaternion(0, 0, robot_state[2]) );
         br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", "base_link"));
+	printf("Odom X: %6.2f\nOdom Y: %6.2f\nOdom a: %6.2f\n",robot_state[0]/100, robot_state[1]/100, robot_state[3]);
         printf("Transform sent!\n");
 
 #endif

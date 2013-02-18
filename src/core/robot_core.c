@@ -408,6 +408,8 @@ void get_robot_state(float **robot_state) {
     (*robot_state)[STATE_X] = state[STATE_X];
     (*robot_state)[STATE_Y] = state[STATE_Y];
     (*robot_state)[STATE_THETA] = state[STATE_THETA];
+	//printf("[ROBOT CORE] internal Theta: %6.2f\n", state[STATE_THETA]);
+	//printf("[ROBOT CORE] external theta: %6.2f\n", (*robot_state)[STATE_THETA]);
     pthread_mutex_unlock(&mutex_state);
 }
 
