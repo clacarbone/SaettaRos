@@ -39,10 +39,10 @@ RM = /usr/bin/cmake -E remove -f
 CMAKE_EDIT_COMMAND = /usr/bin/ccmake
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/erupter/Apps/ROS/Saetta/saetta_base
+CMAKE_SOURCE_DIR = .
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/erupter/Apps/ROS/Saetta/saetta_base
+CMAKE_BINARY_DIR = .
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -346,19 +346,6 @@ serial_comm/fast:
 .PHONY : serial_comm/fast
 
 #=============================================================================
-# Target rules for targets named shellgui
-
-# Build rule for target.
-shellgui: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 shellgui
-.PHONY : shellgui
-
-# fast build rule for target.
-shellgui/fast:
-	$(MAKE) -f CMakeFiles/shellgui.dir/build.make CMakeFiles/shellgui.dir/build
-.PHONY : shellgui/fast
-
-#=============================================================================
 # Target rules for targets named teleop_saetta
 
 # Build rule for target.
@@ -586,21 +573,6 @@ src/sensor/robot_sensors.s:
 	$(MAKE) -f CMakeFiles/robot_sensors.dir/build.make CMakeFiles/robot_sensors.dir/src/sensor/robot_sensors.s
 .PHONY : src/sensor/robot_sensors.s
 
-# target to build an object file
-src/shellgui.o:
-	$(MAKE) -f CMakeFiles/shellgui.dir/build.make CMakeFiles/shellgui.dir/src/shellgui.o
-.PHONY : src/shellgui.o
-
-# target to preprocess a source file
-src/shellgui.i:
-	$(MAKE) -f CMakeFiles/shellgui.dir/build.make CMakeFiles/shellgui.dir/src/shellgui.i
-.PHONY : src/shellgui.i
-
-# target to generate assembly for a file
-src/shellgui.s:
-	$(MAKE) -f CMakeFiles/shellgui.dir/build.make CMakeFiles/shellgui.dir/src/shellgui.s
-.PHONY : src/shellgui.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -628,7 +600,6 @@ help:
 	@echo "... rospack_genmsg_libexe"
 	@echo "... rospack_gensrv"
 	@echo "... serial_comm"
-	@echo "... shellgui"
 	@echo "... teleop_saetta"
 	@echo "... test"
 	@echo "... test-future"
@@ -665,9 +636,6 @@ help:
 	@echo "... src/sensor/robot_sensors.o"
 	@echo "... src/sensor/robot_sensors.i"
 	@echo "... src/sensor/robot_sensors.s"
-	@echo "... src/shellgui.o"
-	@echo "... src/shellgui.i"
-	@echo "... src/shellgui.s"
 .PHONY : help
 
 
