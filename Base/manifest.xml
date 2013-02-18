@@ -15,7 +15,7 @@ to the platform via standard ROS cmd_vel messages.
 <!--  <depend package="dynamic_reconfigure" /> -->
 <!--  <depend package="driver_base" /> -->
   <depend package="tf" />
-  <depend package="Saetta_Messages" />
+  <depend package="Saetta/Messages" />
 </package>
 
 
