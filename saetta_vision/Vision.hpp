@@ -13,8 +13,10 @@
 
 //#define __GXX_EXPERIMENTAL_CXX0X__
 #include <thread>
-
+#include <map>
 #include <BlobResult.h>
+
+#include <gtk/gtk.h>
 
 #define MAX_LOST                100000000
 #define ROB_MAX                 15
@@ -122,7 +124,7 @@ namespace Vision
         void set_showwindows(bool show);
 
     private:
-
+        
         bool open_windows;
         std::pair<int, int> window_size;
         std::pair<int, int> camera_size;
@@ -165,6 +167,7 @@ namespace Vision
         IplImage* blobDetection2(IplImage* imgThreshRed, IplImage* imgThreshGreen);
 
         void capture_loop();
+        std::map<std::string,GtkWidget*> winHndlMap;
         CvCapture* capture;
         VisionConfig configuration;
         std::thread thread_camera_analyzer;

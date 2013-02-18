@@ -5,6 +5,9 @@
  * Created on February 15, 2013, 6:06 PM
  */
 
+#include <gtk-2.0/gtk/gtkstyle.h>
+#include <gtk-2.0/gtk/gtkwidget.h>
+
 #include "Vision.hpp"
 
 namespace Vision
@@ -23,7 +26,7 @@ namespace Vision
         //    capture = cvCaptureFromCAM(0);    
     }*/
 
-    Vision::Vision ( VisionConfig& config ) : thread_camera_analyzer ( &Vision::capture_loop, this ) , pixelMap(config.camera_size.first , config.camera_size.second)
+    Vision::Vision ( VisionConfig& config ) : winHndlMap ( ), thread_camera_analyzer ( &Vision::capture_loop, this ), pixelMap ( config.camera_size.first, config.camera_size.second )
     {
         capture = 0;
         frame = 0;
@@ -58,12 +61,23 @@ namespace Vision
 
         if (configuration.open_windows)
         {
+
             cvNamedWindow ( "Video", CV_WINDOW_NORMAL );
+            GtkWidget* localhndl;
+            localhndl = GTK_WIDGET ( cvGetWindowHandle ( "Video" ) );
+            winHndlMap["Video"] = localhndl;
 #ifdef DEBUG_H   
             cvNamedWindow ( "Binary Red" );
+            localhndl = GTK_WIDGET ( cvGetWindowHandle ( "Binary Red" ) );
+            winHndlMap["Binary Red"] = localhndl;
+
             cvNamedWindow ( "Binary Green" );
+            localhndl = GTK_WIDGET ( cvGetWindowHandle ( "Binary Green" ) );
+            winHndlMap["Binary Green"] = localhndl;
 #endif    
             cvNamedWindow ( "Output", CV_WINDOW_NORMAL );
+            localhndl = GTK_WIDGET ( cvGetWindowHandle ( "Output" ) );
+            winHndlMap["Output"] = localhndl;
 
             cvResizeWindow ( "Video", configuration.window_size.first, configuration.window_size.second );
             cvResizeWindow ( "Output", configuration.window_size.first, configuration.window_size.second );
@@ -90,13 +104,14 @@ namespace Vision
     int Vision::Stop ( void )
     {
         th_process = false;
-        return false;
+        return 0;
     }
 
     void Vision::capture_loop ( )
     {
-        th_process=false;
-        th_quit=false;
+
+        th_process = false;
+        th_quit = false;
         while (1)
         {
             if (th_process)
@@ -132,13 +147,17 @@ namespace Vision
 
                 cvSmooth ( imgFinal, imgFinal, CV_GAUSSIAN, 3, 3 ); //smooth the binary image using Gaussian kernel
 
+                if (configuration.open_windows)
+                {
 
-                cvShowImage ( "Video", frame );
+
+                    cvShowImage ( "Video", frame );
 #ifdef DEBUG_H
-                cvShowImage ( "Binary Red", imgThreshRed );
-                cvShowImage ( "Binary Green", imgThreshGreen );
+                    cvShowImage ( "Binary Red", imgThreshRed );
+                    cvShowImage ( "Binary Green", imgThreshGreen );
 #endif
-                cvShowImage ( "Output", imgFinal );
+                    cvShowImage ( "Output", imgFinal );
+                }
 
 
                 //Clean up used images
@@ -362,7 +381,7 @@ namespace Vision
         {
 
             //Read one line at a time
-            fgets ( line, MAX_LINE_LEN, map );
+            char * rc = fgets ( line, MAX_LINE_LEN, map );
 
             if (line == NULL)
             {
@@ -375,8 +394,8 @@ namespace Vision
             else
             {
                 sscanf ( line, "%f\t%f\t%f\t%f", &indiceRiga, &indiceColonna, &x_coord, &y_coord );
-                pixelMap(indiceRiga,indiceColonna).first = x_coord;
-                pixelMap(indiceRiga,indiceColonna).second = y_coord;
+                pixelMap ( indiceRiga, indiceColonna ).first = x_coord;
+                pixelMap ( indiceRiga, indiceColonna ).second = y_coord;
                 //                        printf("%2.2f %2.2f \n",pixelMap.x_coord[i],pixelMap.y_coord[i]);
             }
         }
@@ -421,7 +440,7 @@ namespace Vision
         open_windows = show;
     }
 
-    Robot_t Robot::createRobot ( CvPoint2D32f h, CvPoint2D32f t, Matrix<std::pair<float,float>> &pixelMap )
+    Robot_t Robot::createRobot ( CvPoint2D32f h, CvPoint2D32f t, Matrix<std::pair<float, float >> &pixelMap )
     {
 
         Robot_t rob;
@@ -452,11 +471,11 @@ namespace Vision
 
     }
 
-    CvPoint2D32f Robot::getGlobalCoord ( int x, int y, Matrix<std::pair<float,float>> &pixelMap )
+    CvPoint2D32f Robot::getGlobalCoord ( int x, int y, Matrix<std::pair<float, float >> &pixelMap )
     {
 
         CvPoint2D32f coord;
-        int index = y * pixelMap.cols() + x;
+        int index = y * pixelMap.cols ( ) + x;
         coord.x = pixelMap[index].first;
         coord.y = pixelMap[index].second;
 

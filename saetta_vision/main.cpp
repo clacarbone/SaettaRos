@@ -7,6 +7,7 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <sstream>
 #include <iostream>
 #include "Vision.hpp"
 #include <ros/ros.h>
@@ -18,7 +19,10 @@
 
 int main ( int argc, char** argv )
 {
-    std::string visionprefix;
+    std::string visionPrefix, visionRobnum, robName, visionRobCtrl;
+    std::stringstream ss;
+    std::vector<std::pair<std::string, int>> robVector;
+    int robNum;
     Vision::VisionConfig myconfig;
     myconfig.set_camera ( 1280, 720 );
     myconfig.set_windows ( 640, 480 );
@@ -33,8 +37,22 @@ int main ( int argc, char** argv )
     // Declare variables that can be modified by launch file or command line.
     int rate = 20;
 
-    n.getParam("vision_prefix", visionprefix);
-    std::cout << "Got back this value: " << visionprefix << std::endl;
+    n.getParam("saetta_vision_prefix", visionPrefix);
+    n.getParam("saetta_vision_robnum", visionRobnum);
+    n.getParam("saetta_vision_ctrl_topic", visionRobCtrl);
+    robNum = atoi(visionRobnum.c_str());
+    for (int i=0; i<robNum;i++)
+    {
+        ss.clear ();
+        ss << visionPrefix <<robNum;
+        robName = ss.str();
+        if (n.hasParam(robName))
+        {
+            std::pair<std::string,int> localpair(robName,-1);
+            robVector.push_back (localpair);            
+        }
+    }
+    
     //    localbase->InitWifi(ip);
     // Initialize node parameters from launch file or command line.
     // Use a private node handle so that multiple instances of the node can be run simultaneously
@@ -54,7 +72,6 @@ int main ( int argc, char** argv )
 
     // Tell ROS how fast to run this node.
     ros::Rate r ( rate );
-    long counter = 0;
     while (n.ok ( ))
     {
         ros::spinOnce ( );
