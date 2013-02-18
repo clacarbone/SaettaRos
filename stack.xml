@@ -1,0 +1,16 @@
+<stack>
+  <description brief="Saetta">
+  Stack for the Saetta Platform.
+  </description>
+  <author>Maintained by Claudio Carbone</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  <depend stack="common_msgs" /> <!-- sensor_msgs -->
+  <depend stack="hokuyo_node" /> <!-- self_test, diagnostic_updater -->
+  <depend stack="vision" />
+  <depend stack="driver_common" /> <!-- dynamic_reconfigure, driver_base -->
+  <depend stack="ros" />
+  <depend stack="ros_comm" /> <!-- roscpp -->
+
+</stack>
