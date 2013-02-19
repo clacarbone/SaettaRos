@@ -613,11 +613,12 @@ namespace saetta_vision
 
                                     assigned[i] = 1; //aggiorno rob associati
                                     associated++;
-                                    printf ( "Robot %d : (%f, %f, %f)\n", i, avRobList->robList[i].coord.x, avRobList->robList[i].coord.y, avRobList->robList[i].orientation );
+                                    //printf ( "Robot %d : (%f, %f, %f)\n", i, avRobList->robList[i].coord.x, avRobList->robList[i].coord.y, avRobList->robList[i].orientation );
                                     if (minDist_av_pot>5)
                                         avRobList->robList[i].moving=true;
                                     else
                                         avRobList->robList[i].moving=false;
+                                    printf("Robot %d : dist %f\n",idAv,minDist_av_pot);
                                     
                                 }
 
@@ -626,7 +627,7 @@ namespace saetta_vision
                             {
                                 // Deactivate the i-th robot
                                 Robot::deactivateRob ( i, avRobList, distMat );
-                                printf ( "Robot %d lost da %d step\n", i, avRobList->robList[i].lost );
+                                //printf ( "Robot %d lost da %d step\n", i, avRobList->robList[i].lost );
                                 deactivated++;
                                 // This robot is deactivated (then is it marked as assigned)
                                 assigned[i] = 1;

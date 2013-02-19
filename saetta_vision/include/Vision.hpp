@@ -20,7 +20,7 @@
 #include <gtk/gtk.h>
 
 #define MAX_LOST                100000000
-#define ROB_MAX                 50
+#define ROB_MAX                 15
 #define MAX_LINE_LEN            4096
 
 namespace saetta_vision

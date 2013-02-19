@@ -43,7 +43,7 @@ typedef struct
 } autoconf_status_t;
 
 template <typename Type1, typename Type2>
-int RosFetchParam(ros::NodeHandle& node, Type1& parmname, Type2 storage)
+int RosFetchParam( ros::NodeHandle& node, Type1& parmname, Type2 storage )
 {
     Type2 temp;
     if (node.getParam(parmname, temp))
@@ -58,24 +58,16 @@ int RosFetchParam(ros::NodeHandle& node, Type1& parmname, Type2 storage)
 
 }
 
-void ConfigInit(autoconf_status_t obj)
-{
-    obj.state = init;
-    obj.index = 0;
-    obj.robCounter = 0;
-    obj.visionRobnum = 5;
-    obj.delayCounter = 0;
-    obj.delayThreshold = 60;
-}
+void ConfigInit( autoconf_status_t& obj );
 
-int main(int argc, char** argv)
+int main( int argc, char** argv )
 {
 
     autoconf_status_t autoConfiguration;
     ConfigInit(autoConfiguration);
     std::stringstream ss;
     std::vector < std::pair < std::string, int >> robVector;
-    ros::Publisher pubCmdVel;
+    std::string topic;
 
     ros::init(argc, argv, "Saetta_Vision");
     ros::NodeHandle n;
@@ -102,6 +94,9 @@ int main(int argc, char** argv)
     myvision.Start();
     autoConfiguration.state = autoconf_states_t::init;
     ros::Rate r(60);
+    saetta_vision::RobotList_t locllist;
+    saetta_msgs::cmd_vel vel;
+    ros::Publisher pubCmdVel;
     while (n.ok())
     {
 
@@ -110,7 +105,7 @@ int main(int argc, char** argv)
             switch (autoConfiguration.state)
             {
                 case init:
-                    saetta_vision::RobotList_t locllist;
+
                     //if (RosFetchParam(n, "saetta_vision_prefix", visionPrefix) != 0)
                     if (!(n.getParam("saetta_vision_prefix", autoConfiguration.visionPrefix)))
                     {
@@ -139,6 +134,7 @@ int main(int argc, char** argv)
                     break;
 
                 case move:
+                    std::cout << "Issuing move command." <<std::endl;
                     autoConfiguration.robName = "";
                     ss.str("");
                     ss << autoConfiguration.visionPrefix << (autoConfiguration.robCounter + 1);
@@ -146,23 +142,23 @@ int main(int argc, char** argv)
                     std::cout << "Looking up " << ss.str() << std::endl;
                     ss.str("");
                     ss << "/" << autoConfiguration.robName << "/cmd_vel";
-                    if (n.hasParam(ss.str()))
-                    {
-                        saetta_msgs::cmd_vel vel;
-                        vel.linear = 10;
-                        vel.angular = 0;
-                        pubCmdVel = n.advertise<saetta_msgs::cmd_vel > (ss.str(), 1);
-                        pubCmdVel.publish(vel);
-                        autoConfiguration.state = waiting;
-                    }
+                    vel.linear = 10.0;
+                    vel.angular = 0.0;
+                    topic=("");
+                    topic=ss.str();
+                    pubCmdVel = n.advertise<saetta_msgs::cmd_vel > (topic, 1);
+                    autoConfiguration.state = waiting;
+                    std::cout << "Waiting 1s" <<std::endl;
                     break;
-                    
+
                 case err:
                     break;
 
 
                     break;
                 case waiting:
+                    if (autoConfiguration.delayCounter==60)
+                        pubCmdVel.publish(vel);
                     autoConfiguration.delayCounter++;
                     if (autoConfiguration.delayCounter >= autoConfiguration.delayThreshold)
                     {
@@ -170,8 +166,13 @@ int main(int argc, char** argv)
                         autoConfiguration.delayCounter = 0;
                     }
                     break;
-
+                    
                 case checkmoving:
+                    std::cout << "Checking if any marker has moved." <<std::endl;
+                    vel.linear = 0;
+                    vel.angular = 0;
+                    pubCmdVel.publish(vel);
+                    
                     locllist = myvision.getRobList();
                     for (int k = 0; k < ROB_MAX; k++)
                     {
@@ -183,7 +184,7 @@ int main(int argc, char** argv)
                     }
                     autoConfiguration.state = nextrob;
                     break;
-
+                    
                 case nextrob:
                     if (autoConfiguration.robCounter < autoConfiguration.visionRobnum)
                     {
@@ -193,7 +194,7 @@ int main(int argc, char** argv)
                     else
                         autoConfiguration.state = configured;
                     break;
-                    
+
                 case resumed:
                     break;
                 case configured:
@@ -212,3 +213,12 @@ int main(int argc, char** argv)
 }
 
 
+void ConfigInit( autoconf_status_t& obj )
+{
+    obj.state = init;
+    obj.index = 0;
+    obj.robCounter = 0;
+    obj.visionRobnum = 5;
+    obj.delayCounter = 0;
+    obj.delayThreshold = 240;
+}

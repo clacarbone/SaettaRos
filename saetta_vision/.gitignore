@@ -10,3 +10,4 @@ cmake_install.cmake
 *~
 *.save
 Map.txt
+src/cvblobs8.3_linux/libblob.a
