@@ -8,11 +8,11 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #  RelWithDebInfo : w/ debug symbols, w/ optimization
 #  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
 set(coverage RelWithDebInfo)
-
-rosbuild_init()
 set(CMAKE_CXX_FLAGS "-std=c++0x")
+rosbuild_init()
 
-rosbuild_find_ros_package(Saetta_Messages)
+
+rosbuild_find_ros_package(saetta_msgs)
 
 #set paths
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
@@ -28,7 +28,7 @@ link_directories(${LIBRARY_OUTPUT_PATH})
 # Set the directories where include files can be found.
 include_directories (include)
 include_directories (${INCLUDE_PATHS})
-include_directories (${Saetta_Messages_PACKAGE_PATH}/msg_gen/cpp/include)
+include_directories (${saetta_msgs_PACKAGE_PATH}/msg_gen/cpp/include)
 
 rosbuild_find_ros_package (tf)
 

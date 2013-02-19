@@ -1,7 +1,7 @@
 <launch>
 <!--	<machine name="Panda01" address="LabRob-Panda-01" user="panda" default="false" env-loader="/opt/ros/fuerte/env.sh" timeout="60" /> -->
 	<machine name="Panda01" address="LabRob-Panda-01" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" />
-<!--	<machine name="Panda02" address="LabRob-Panda-02" user="panda" default="false" env-loader="/home/panda/.bashrc" timeout="60" /> -->
+	<machine name="Panda02" address="LabRob-Panda-02" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" />
 <!--	<machine name="Panda03" address="LabRob-Panda-03" user="panda" default="false" env-loader="/opt/ros/fuerte/env.sh" timeout="60" /> -->
 	<machine name="lappy" address="FCD-04-Ubuntu" user="erupter" default="false" env-loader="/opt/ros/fuerte/env.sh"/>
 
@@ -54,10 +54,10 @@
 		<node pkg="robot_state_publisher" type="state_publisher" name="robot_1_state_publisher"/>		
 
 		<!-- Saetta Nodes -->
-<!--		<node pkg="saetta_base" type="base" name="SaettaBase01" machine="Panda01">
+		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda01">
 			<remap from="/saetta/velocity" to="cmd_vel"/>
 		</node>
--->
+
 		<!-- Hokuyo Base Node -->
 <!--		<param name="use_rep_117" value="true"/>
 		<node pkg="hokuyo_node" type="hokuyo_node" name="laser" machine="Panda01" respawn="true">
@@ -84,10 +84,10 @@
 		<node pkg="robot_state_publisher" type="state_publisher" name="robot_1_state_publisher"/>		
 
 		<!-- Saetta Nodes -->
-<!--		<node pkg="saetta_base" type="base" name="SaettaBase01" machine="Panda01">
+		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda02">
 			<remap from="/saetta/velocity" to="cmd_vel"/>
 		</node>
--->
+
 		<!-- Hokuyo Base Node -->
 <!--		<param name="use_rep_117" value="true"/>
 		<node pkg="hokuyo_node" type="hokuyo_node" name="laser" machine="Panda01" respawn="true">

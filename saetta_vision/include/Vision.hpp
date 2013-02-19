@@ -13,16 +13,17 @@
 
 //#define __GXX_EXPERIMENTAL_CXX0X__
 #include <thread>
+#include <mutex>
 #include <map>
 #include <BlobResult.h>
 
 #include <gtk/gtk.h>
 
 #define MAX_LOST                100000000
-#define ROB_MAX                 15
+#define ROB_MAX                 50
 #define MAX_LINE_LEN            4096
 
-namespace Vision
+namespace saetta_vision
 {
 
     template<class Type1>
@@ -94,9 +95,10 @@ namespace Vision
         CvPoint2D32f center;
         CvPoint2D32f coord;
 
+        bool moving;
         float orientation;
-        int active;
-        int lost;
+        bool active;
+        bool lost;
         int id;
     } Robot_t;
 
@@ -159,6 +161,7 @@ namespace Vision
         virtual ~Vision();
         int Start();
         int Stop();
+        RobotList_t getRobList();
 
     private:
         int InitPixelMap(const char * map_file);
@@ -180,6 +183,7 @@ namespace Vision
         float distMatrix[ROB_MAX][ROB_MAX];
         float minDistMatrix[ROB_MAX][ROB_MAX];
         Matrix<std::pair<float, float >> pixelMap;
+        std::mutex mutexRobListAccess;
         //IplImage* imgTracking;
 
     };

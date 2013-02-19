@@ -10,7 +10,7 @@
 
 #include "Vision.hpp"
 
-namespace Vision
+namespace saetta_vision
 {
 
     /*Vision::Vision ( ) : thread_camera_analyzer ( &Vision::capture_loop, this )
@@ -105,6 +105,14 @@ namespace Vision
     {
         th_process = false;
         return 0;
+    }
+    
+    RobotList_t Vision::getRobList(void)
+    {
+        mutexRobListAccess.lock();
+        RobotList_t newlist = avRobList;
+        mutexRobListAccess.unlock();
+        return newlist;        
     }
 
     void Vision::capture_loop ( )
@@ -332,7 +340,9 @@ namespace Vision
 
         // Matching The List of Potential Robots with previous List of Robots
         //    updateRobotList_tAndrea(&avRobList, potRobList);
+        mutexRobListAccess.lock();
         Robot::updateRobotList ( &avRobList, potRobList, distMatrix );
+        mutexRobListAccess.unlock();
         /*
             // Print robots
             for (i = 0; i < ROB_MAX; i++) {
@@ -565,7 +575,7 @@ namespace Vision
                         {
                             //                        float dist;
                             int idPot, idAv;
-                            float minDist_av_pot, minDist_pot_av;
+                            float minDist_pot_av,minDist_av_pot ;
 
                             //                        idPot;
                             //                        idAv;
@@ -604,6 +614,11 @@ namespace Vision
                                     assigned[i] = 1; //aggiorno rob associati
                                     associated++;
                                     printf ( "Robot %d : (%f, %f, %f)\n", i, avRobList->robList[i].coord.x, avRobList->robList[i].coord.y, avRobList->robList[i].orientation );
+                                    if (minDist_av_pot>5)
+                                        avRobList->robList[i].moving=true;
+                                    else
+                                        avRobList->robList[i].moving=false;
+                                    
                                 }
 
                             }

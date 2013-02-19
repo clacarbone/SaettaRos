@@ -12,6 +12,8 @@ to the platform via standard ROS cmd_vel messages.
   <depend package="rospy"/>
   <depend package="roscpp"/>
   <rosdep name="OpenCV 2.4.0"/>
+  <depend package="saetta_msgs" />
+
 </package>
 
 
