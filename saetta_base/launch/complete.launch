@@ -1,8 +1,8 @@
 <launch>
 <!--	<machine name="Panda01" address="LabRob-Panda-01" user="panda" default="false" env-loader="/opt/ros/fuerte/env.sh" timeout="60" /> -->
 	<machine name="Panda01" address="LabRob-Panda-01" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" />
-	<machine name="Panda02" address="LabRob-Panda-02" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" />
-<!--	<machine name="Panda03" address="LabRob-Panda-03" user="panda" default="false" env-loader="/opt/ros/fuerte/env.sh" timeout="60" /> -->
+<!--	<machine name="Panda02" address="LabRob-Panda-02" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" /> -->
+	<machine name="Panda03" address="LabRob-Panda-03" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" />
 	<machine name="lappy" address="FCD-04-Ubuntu" user="erupter" default="false" env-loader="/opt/ros/fuerte/env.sh"/>
 
 	<!-- send Saetta urdf to param server -->
@@ -104,6 +104,36 @@
 		<node pkg="tf" type="static_transform_publisher" name="tf_static_l01v01" args="0.1 0 0.1 0 0 0 body laser 10" />"
 		</group>
 	<!-- == END ROBOT 02 == -->
+
+	<!-- == ROBOT 03 == -->
+		<group ns="robot_3">
+		<param name="tf_prefix" value="robot_3"/>
+		<param name="robot_description" command="$(find xacro)/xacro.py $(find saetta_base)/Saetta.urdf" />
+		
+		<!-- Robot State Publisher -->
+		<node pkg="robot_state_publisher" type="state_publisher" name="robot_1_state_publisher"/>		
+
+		<!-- Saetta Nodes -->
+		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda03">
+			<remap from="/saetta/velocity" to="cmd_vel"/>
+		</node>
+
+		<!-- Hokuyo Base Node -->
+<!--		<param name="use_rep_117" value="true"/>
+		<node pkg="hokuyo_node" type="hokuyo_node" name="laser" machine="Panda01" respawn="true">
+			<remap from="/scan" to="laser"/>		
+		</node> 
+-->
+		<!-- Hokuyo frame reconfigure -->
+<!--		<node pkg="dynamic_reconfigure" type="dynparam" name="laser_reconf" args="set_from_parameters laser"> -->
+<!-- 			<param name="min_ang" type="double" value="-1.0" /> -->
+<!-- 			<param name="max_ang" type="double" value="1.0" /> -->
+<!--			<param name="frame_id" type="string" value="/robot_1/laser" />
+		</node>
+-->
+		<node pkg="tf" type="static_transform_publisher" name="tf_static_l01v01" args="0.1 0 0.1 0 0 0 body laser 10" />"
+		</group>
+	<!-- == END ROBOT 03 == -->
 
 
 
