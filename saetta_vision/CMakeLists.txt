@@ -41,6 +41,14 @@ set(PATH_INC ${PROJECT_SOURCE_DIR}/include)
 set(INCLUDE_PATHS ${PATH_INC} ${PATH_CVBLOBS} ${OpenCV_CFLAGS} ${gtk+_CFLAGS})
 link_directories(${LIBRARY_OUTPUT_PATH})
 
+#set filename holders
+set(SRC_CVBLOBS ${PATH_CVBLOBS}/blob.cpp
+		${PATH_CVBLOBS}/BlobContour.cpp
+		${PATH_CVBLOBS}/BlobOperators.cpp
+		${PATH_CVBLOBS}/BlobProperties.cpp
+		${PATH_CVBLOBS}/BlobResult.cpp
+		${PATH_CVBLOBS}/ComponentLabeling.cpp)
+
 # Set the directories where include files can be found.
 include_directories (include)
 include_directories (${INCLUDE_PATHS})
@@ -63,11 +71,13 @@ include_directories (${saetta_msgs_PACKAGE_PATH}/msg_gen/cpp/include)
 
 #common commands for building c++ executables and libraries
 rosbuild_add_library(vision ${PATH_SRC}/Vision.cpp)
+rosbuild_add_library(blob ${SRC_CVBLOBS})
 # add imported target
-add_library(blobs STATIC IMPORTED)
+#add_library(blobs STATIC IMPORTED)
 # point the imported target at the real file
-set_property(TARGET blobs PROPERTY IMPORTED_LOCATION ${PATH_CVBLOBS}/libblob.a)
-target_link_libraries(vision ${OpenCV_LIBRARIES} ${PATH_CVBLOBS}/libblob.a)
+#set_property(TARGET blobs PROPERTY IMPORTED_LOCATION ${PATH_CVBLOBS}/libblob.a)
+target_link_libraries(blob ${gtk+_LIBRARIES})
+target_link_libraries(vision ${OpenCV_LIBRARIES} blob)
 rosbuild_add_executable(vispos ${PATH_SRC}/main.cpp)
 target_link_libraries(vispos vision)
 rosbuild_link_boost(vispos system)
