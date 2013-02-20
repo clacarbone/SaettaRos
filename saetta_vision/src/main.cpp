@@ -4,7 +4,7 @@
  *
  * Created on February 8, 2013, 3:14 PM
  */
-
+#define __GXX_EXPERIMENTAL_CXX0X__
 #include <cstdlib>
 #include <cstdio>
 #include <sstream>

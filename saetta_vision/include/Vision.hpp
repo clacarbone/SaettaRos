@@ -9,6 +9,7 @@
 #define	VISION_HPP
 #include <cv.h>
 #include <cv.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 #include <highgui.h>
 
 //#define __GXX_EXPERIMENTAL_CXX0X__
@@ -178,7 +179,7 @@ namespace saetta_vision
         RobotList_t avRobList;
         bool th_process;
         bool th_quit;
-        CvScalar lowRed, highRed, lowGreen, highGreen;
+        CvScalar lowTrsh1, highTrsh1, lowTsrh2, highTsrh2;
         bool th_ok;
         float distMatrix[ROB_MAX][ROB_MAX];
         float minDistMatrix[ROB_MAX][ROB_MAX];

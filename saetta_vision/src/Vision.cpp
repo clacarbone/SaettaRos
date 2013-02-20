@@ -82,12 +82,13 @@ namespace saetta_vision
             cvResizeWindow ( "Video", configuration.window_size.first, configuration.window_size.second );
             cvResizeWindow ( "Output", configuration.window_size.first, configuration.window_size.second );
         }
-        lowRed = cvScalar ( 0, 254, 50 );
-        highRed = cvScalar ( 58, 256, 134 );
+        lowTrsh1 = cvScalar ( 0, 254, 50 );
+        highTrsh1 = cvScalar ( 58, 256, 134 );
 
-        lowGreen = cvScalar ( 58, 254, 68 );
-        highGreen = cvScalar ( 78, 256, 136 );
-
+        lowTsrh2 = cvScalar ( 58, 254, 68 );
+        highTsrh2 = cvScalar ( 78, 256, 136 );
+        
+        
 
         // Load Map
         Vision::InitPixelMap ( configuration.map_name.c_str ( ) );
@@ -142,9 +143,9 @@ namespace saetta_vision
 
 
 
-                IplImage* imgThreshRed = Vision::GetThresholdedImage ( imgHSV, lowRed, highRed );
+                IplImage* imgThreshRed = Vision::GetThresholdedImage ( imgHSV, lowTrsh1, highTrsh1 );
 
-                IplImage* imgThreshGreen = Vision::GetThresholdedImage ( imgHSV, lowGreen, highGreen );
+                IplImage* imgThreshGreen = Vision::GetThresholdedImage ( imgHSV, lowTsrh2, highTsrh2 );
 
                 cvSmooth ( imgThreshRed, imgThreshRed, CV_GAUSSIAN, 3, 3 ); //smooth the binary image using Gaussian kernel
 
@@ -199,6 +200,7 @@ namespace saetta_vision
     IplImage* Vision::GetThresholdedImage ( IplImage* imgHSV, CvScalar Low, CvScalar High )
     {
         IplImage* imgThresh = cvCreateImage ( cvGetSize ( imgHSV ), IPL_DEPTH_8U, 1 );
+        //cv::inRange(imgHSV, Low, High, imgThresh);
         cvInRangeS ( imgHSV, Low, High, imgThresh );
         return imgThresh;
     }

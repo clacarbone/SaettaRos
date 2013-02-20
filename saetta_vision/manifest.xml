@@ -9,7 +9,9 @@ Saetta vision  </description>
   <depend package="roscpp"/>
   <rosdep name="OpenCV 2.4.0"/>
   <depend package="saetta_msgs" />
-
+  <depend package="image_transport" />
+  <depend package="opencv2" />
+  <depend package="cv_bridge" />
 </package>
 
 
