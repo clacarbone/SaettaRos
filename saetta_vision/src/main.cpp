@@ -1,8 +1,8 @@
 /* 
  * File:   main.cpp
- * Author: Claudio Carbone
+ * Author: andrea
  *
- * Created on February 10, 2013, 3:14 PM
+ * Created on February 8, 2013, 3:14 PM
  */
 #define __GXX_EXPERIMENTAL_CXX0X__
 #include <cstdlib>
@@ -58,6 +58,7 @@ int RosFetchParam( ros::NodeHandle& node, Type1& parmname, Type2 storage )
 
 }
 
+bool robothasmoved (int k, saetta_vision::RobotList_t list1, saetta_vision::RobotList_t list2);
 void ConfigInit( autoconf_status_t& obj );
 
 int main( int argc, char** argv )
@@ -94,7 +95,7 @@ int main( int argc, char** argv )
     myvision.Start();
     autoConfiguration.state = autoconf_states_t::init;
     ros::Rate r(60);
-    saetta_vision::RobotList_t locllist;
+    saetta_vision::RobotList_t originalRobotListLocal, movedRobotListLocal;
     saetta_msgs::cmd_vel vel;
     ros::Publisher pubCmdVel;
     while (n.ok())
@@ -134,6 +135,7 @@ int main( int argc, char** argv )
                     break;
 
                 case move:
+		    originalRobotListLocal = myvision.getRobList();
                     std::cout << "Issuing move command." <<std::endl;
                     autoConfiguration.robName = "";
                     ss.str("");
@@ -173,10 +175,10 @@ int main( int argc, char** argv )
                     vel.angular = 0;
                     pubCmdVel.publish(vel);
                     
-                    locllist = myvision.getRobList();
+                    movedRobotListLocal = myvision.getRobList();
                     for (int k = 0; k < ROB_MAX; k++)
                     {
-                        if (locllist.robList[k].moving)
+                        if (robothasmoved(k))
                         {
                             std::pair<std::string, int> loclpair(autoConfiguration.robName, k);
                             robVector.push_back(loclpair);
@@ -221,4 +223,16 @@ void ConfigInit( autoconf_status_t& obj )
     obj.visionRobnum = 5;
     obj.delayCounter = 0;
     obj.delayThreshold = 240;
+}
+
+bool robothasmoved (int k, saetta_vision::RobotList_t list1, saetta_vision::RobotList_t list2)
+{
+    float distx, disty,dist;
+    distx = powf(2,(list1.robList[k].coord.x - list2.robList[k].coord.x));
+    disty = powf(2,(list1.robList[k].coord.y - list2.robList[k].coord.y));
+    dist = sqrt(distx+disty);
+    if (dist >= 10)
+	return true:
+    return false;
+
 }
