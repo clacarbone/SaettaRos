@@ -71,6 +71,7 @@ include_directories (${saetta_msgs_PACKAGE_PATH}/msg_gen/cpp/include)
 
 #common commands for building c++ executables and libraries
 rosbuild_add_library(vision ${PATH_SRC}/Vision.cpp)
+rosbuild_add_library(vision2 ${PATH_SRC}/Vision2.cpp)
 rosbuild_add_library(blob ${SRC_CVBLOBS})
 # add imported target
 #add_library(blobs STATIC IMPORTED)
@@ -78,8 +79,9 @@ rosbuild_add_library(blob ${SRC_CVBLOBS})
 #set_property(TARGET blobs PROPERTY IMPORTED_LOCATION ${PATH_CVBLOBS}/libblob.a)
 target_link_libraries(blob ${gtk+_LIBRARIES})
 target_link_libraries(vision ${OpenCV_LIBRARIES} blob)
+target_link_libraries(vision2 ${OpenCV_LIBRARIES} blob)
 rosbuild_add_executable(vispos ${PATH_SRC}/main.cpp)
 target_link_libraries(vispos vision)
 rosbuild_link_boost(vispos system)
 rosbuild_add_executable(cam_read ${PATH_SRC}/cam_read.cpp)
-target_link_libraries(cam_read ${OpenCV_LIBRARIES})
+target_link_libraries(cam_read ${OpenCV_LIBRARIES} vision2)

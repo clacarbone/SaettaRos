@@ -1,8 +1,8 @@
 /* 
  * File:   main.cpp
- * Author: andrea
+ * Author: Claudio Carbone
  *
- * Created on February 8, 2013, 3:14 PM
+ * Created on February 10, 2013, 3:14 PM
  */
 #define __GXX_EXPERIMENTAL_CXX0X__
 #include <cstdlib>

@@ -1,10 +1,10 @@
 <launch>
 <!--	<machine name="Panda01" address="LabRob-Panda-01" user="panda" default="false" env-loader="/opt/ros/fuerte/env.sh" timeout="60" /> -->
-	<machine name="Panda01" address="LabRob-Panda-01" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" />
+<!--	<machine name="Panda01" address="LabRob-Panda-01" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" />
 	<machine name="Panda02" address="LabRob-Panda-02" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" />
 	<machine name="Panda03" address="LabRob-Panda-03" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" />
 	<machine name="lappy" address="FCD-04-Ubuntu" user="erupter" default="false" env-loader="/opt/ros/fuerte/env.sh"/>
-
+-->
 	<!-- send Saetta urdf to param server -->
 	<param name="saetta_vision_prefix" value="robot_"/>
 	<param name="saetta_vision_robnum" value="15" />
@@ -56,10 +56,10 @@
 		<node pkg="robot_state_publisher" type="state_publisher" name="state_publisher"/>		
 
 		<!-- Saetta Nodes -->
-		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda01">
+<!--		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda01">
 			<remap from="/saetta/velocity" to="cmd_vel"/>
 		</node>
-
+-->
 		<!-- Hokuyo Base Node -->
 <!--		<param name="use_rep_117" value="true"/>
 		<node pkg="hokuyo_node" type="hokuyo_node" name="laser" machine="Panda01" respawn="true">
@@ -87,10 +87,10 @@
 		<node pkg="robot_state_publisher" type="state_publisher" name="state_publisher"/>		
 
 		<!-- Saetta Nodes -->
-		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda02">
+<!--		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda02">
 			<remap from="/saetta/velocity" to="cmd_vel"/>
 		</node>
-
+-->
 		<!-- Hokuyo Base Node -->
 <!--		<param name="use_rep_117" value="true"/>
 		<node pkg="hokuyo_node" type="hokuyo_node" name="laser" machine="Panda02" respawn="true">
@@ -118,10 +118,10 @@
 		<node pkg="robot_state_publisher" type="state_publisher" name="state_publisher"/>		
 
 		<!-- Saetta Nodes -->
-		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda03">
+<!--		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda03">
 			<remap from="/saetta/velocity" to="cmd_vel"/>
 		</node>
-
+-->
 		<!-- Hokuyo Base Node -->
 <!--		<param name="use_rep_117" value="true"/>
 		<node pkg="hokuyo_node" type="hokuyo_node" name="laser" machine="Panda03" respawn="true">
