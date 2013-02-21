@@ -163,6 +163,7 @@ namespace saetta_vision
         int Start();
         int Stop();
         RobotList_t getRobList();
+        bool getTryRobList(RobotList_t& roblist  );
 
     private:
         int InitPixelMap(const char * map_file);
@@ -185,6 +186,7 @@ namespace saetta_vision
         float minDistMatrix[ROB_MAX][ROB_MAX];
         Matrix<std::pair<float, float >> pixelMap;
         std::mutex mutexRobListAccess;
+        bool data_avail;
         //IplImage* imgTracking;
 
     };

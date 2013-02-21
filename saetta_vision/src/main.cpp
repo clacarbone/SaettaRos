@@ -16,6 +16,8 @@
 #include "Vision.hpp"
 #include <ros/ros.h>
 #include <saetta_msgs/cmd_vel.h>
+#include <math.h>
+#include <tf/transform_broadcaster.h>
 
 /*
  * 
@@ -28,15 +30,15 @@ typedef enum
     waiting,
     move,
     checkmoving,
-    assignindex,
     nextrob,
     configured,
-    resumed
+    resumed,
+    delay
 } autoconf_states_t;
 
 typedef struct
 {
-    autoconf_states_t state;
+    autoconf_states_t state, next_state;
     int index;
     std::string visionPrefix, robName, visionRobCtrl;
     int robCounter, visionRobnum, delayCounter, delayThreshold;
@@ -58,12 +60,22 @@ int RosFetchParam( ros::NodeHandle& node, Type1& parmname, Type2 storage )
 
 }
 
-bool robothasmoved (int k, saetta_vision::RobotList_t list1, saetta_vision::RobotList_t list2);
+template <typename Type1>
+bool VectorContains( std::vector<Type1> vect, Type1 elem )
+{
+    if (std::find(vect.begin(), vect.end(), elem) != vect.end()) return true;
+    else return false;
+}
+bool robothasmoved( int k, saetta_vision::RobotList_t list1, saetta_vision::RobotList_t list2 );
 void ConfigInit( autoconf_status_t& obj );
 
 int main( int argc, char** argv )
 {
-
+    std::vector<int> indexVector;
+    saetta_vision::RobotList_t robotListLocal, movedRobotListLocal;
+    saetta_msgs::cmd_vel vel;
+    saetta_vision::VisionConfig myconfig;
+    int sizet;
     autoconf_status_t autoConfiguration;
     ConfigInit(autoConfiguration);
     std::stringstream ss;
@@ -86,7 +98,6 @@ int main( int argc, char** argv )
     // Tell ROS how fast to run this node.
 
 
-    saetta_vision::VisionConfig myconfig;
     myconfig.set_camera(1280, 720);
     myconfig.set_windows(640, 480);
     myconfig.set_mapname("Map.txt");
@@ -94,10 +105,11 @@ int main( int argc, char** argv )
     saetta_vision::Vision myvision(myconfig);
     myvision.Start();
     autoConfiguration.state = autoconf_states_t::init;
-    ros::Rate r(60);
-    saetta_vision::RobotList_t originalRobotListLocal, movedRobotListLocal;
-    saetta_msgs::cmd_vel vel;
+    ros::Rate r(50);
     ros::Publisher pubCmdVel;
+    tf::TransformBroadcaster br;
+    tf::Transform transform;
+    float distx, disty, dist;
     while (n.ok())
     {
 
@@ -130,27 +142,29 @@ int main( int argc, char** argv )
                         n.shutdown();
                         break;
                     }
-                    std::cout << "Ctrl Topic: " << autoConfiguration.visionRobCtrl << std::endl << std::endl;
-                    autoConfiguration.state = autoconf_states_t::move;
+                    std::cout << "Ctrl Topic: " << autoConfiguration.visionRobCtrl << std::endl << "Holding off until vision stabilizes..." << std::endl << std::endl;
+                    
+                    autoConfiguration.state = autoconf_states_t::delay;
+                    autoConfiguration.next_state = autoconf_states_t::move;
+                    
                     break;
 
                 case move:
-                    originalRobotListLocal = myvision.getRobList();
-                    std::cout << "Issuing move command." <<std::endl;
+                    robotListLocal = myvision.getRobList();
                     autoConfiguration.robName = "";
                     ss.str("");
                     ss << autoConfiguration.visionPrefix << (autoConfiguration.robCounter + 1);
                     autoConfiguration.robName = ss.str();
-                    std::cout << "Looking up " << ss.str() << std::endl;
+                    std::cout << "Looking up " << ss.str() << "... " << std::endl;
                     ss.str("");
                     ss << "/" << autoConfiguration.robName << "/cmd_vel";
                     vel.linear = 10.0;
                     vel.angular = 0.0;
-                    topic=("");
-                    topic=ss.str();
+                    topic = ("");
+                    topic = ss.str();
                     pubCmdVel = n.advertise<saetta_msgs::cmd_vel > (topic, 1);
                     autoConfiguration.state = waiting;
-                    std::cout << "Waiting 1s" <<std::endl;
+                    std::cout << "Waiting for movement... " << std::endl;
                     break;
 
                 case err:
@@ -159,7 +173,7 @@ int main( int argc, char** argv )
 
                     break;
                 case waiting:
-                    if (autoConfiguration.delayCounter==60)
+                    if (autoConfiguration.delayCounter == 120)
                         pubCmdVel.publish(vel);
                     autoConfiguration.delayCounter++;
                     if (autoConfiguration.delayCounter >= autoConfiguration.delayThreshold)
@@ -169,32 +183,66 @@ int main( int argc, char** argv )
                     }
                     break;
                     
+                case delay:
+                    autoConfiguration.delayCounter++;
+                    if (autoConfiguration.delayCounter >= autoConfiguration.delayThreshold)
+                    {
+                        autoConfiguration.state = autoConfiguration.next_state;
+                        autoConfiguration.delayCounter = 0;
+                    }
+                    break;
+
                 case checkmoving:
-                    std::cout << "Checking if any marker has moved." <<std::endl;
+                    std::cout << "Checking if any marker has moved... " << std::endl;
                     vel.linear = 0;
                     vel.angular = 0;
                     pubCmdVel.publish(vel);
-                    
+                    sizet = robVector.size();
                     movedRobotListLocal = myvision.getRobList();
+                    //printf("Robot\t\tX_prima\tY_prima\tX_dopo\tY_dopo\tDist\n");
                     for (int k = 0; k < ROB_MAX; k++)
                     {
-                        if (robothasmoved(k, originalRobotListLocal, movedRobotListLocal))
+                        if (!VectorContains(indexVector, k))
                         {
-                            std::pair<std::string, int> loclpair(autoConfiguration.robName, k);
-                            robVector.push_back(loclpair);
+                            /*distx = powf(robotListLocal.robList[k].coord.x - movedRobotListLocal.robList[k].coord.x, 2);
+                            disty = powf(robotListLocal.robList[k].coord.y - movedRobotListLocal.robList[k].coord.y, 2);
+                            dist = sqrtf(distx + disty);
+                            printf("%d\t\t%5.2f\t%5.2f\t%5.2f\t%5.2f\t%5.2f\n", k, robotListLocal.robList[k].coord.x, robotListLocal.robList[k].coord.y, movedRobotListLocal.robList[k].coord.x, movedRobotListLocal.robList[k].coord.y, dist);
+                             */
+                            if (robothasmoved(k, robotListLocal, movedRobotListLocal))
+                            {
+                                distx = powf(robotListLocal.robList[k].coord.x - movedRobotListLocal.robList[k].coord.x, 2);
+                                disty = powf(robotListLocal.robList[k].coord.y - movedRobotListLocal.robList[k].coord.y, 2);
+                                dist = sqrtf(distx + disty);
+                                printf("%d\t\t%5.2f\t%5.2f\t%5.2f\t%5.2f\t%5.2f\n", k, robotListLocal.robList[k].coord.x, robotListLocal.robList[k].coord.y, movedRobotListLocal.robList[k].coord.x, movedRobotListLocal.robList[k].coord.y, dist);
+                                std::pair<std::string, int> loclpair(autoConfiguration.robName, k);
+                                robVector.push_back(loclpair);
+                                indexVector.push_back(k);
+                            }
+
                         }
                     }
+                    if (robVector.size() != sizet)
+                        printf("Identified %s as id %d\n\n", robVector[robVector.size() - 1].first.c_str(), robVector[robVector.size() - 1].second);
+                    else
+                        printf("%s not identified.\n\n", autoConfiguration.robName.c_str());
                     autoConfiguration.state = nextrob;
                     break;
-                    
+
                 case nextrob:
+                    autoConfiguration.robCounter++;
                     if (autoConfiguration.robCounter < autoConfiguration.visionRobnum)
-                    {
-                        autoConfiguration.robCounter++;
                         autoConfiguration.state = move;
-                    }
                     else
+                    {
                         autoConfiguration.state = configured;
+                        std::cout << "Found " << robVector.size() << " robots." << std::endl;
+                        std::cout << "Initiating TF publication for the following:" << std::endl;
+                        for (int k = 0; k < robVector.size(); ++k)
+                        {
+                            std::cout << '\t' << robVector[k].first << std::endl;
+                        }
+                    }
                     break;
 
                 case resumed:
@@ -203,7 +251,21 @@ int main( int argc, char** argv )
                     break;
 
             }
-
+        }
+        if ((autoConfiguration.state == configured) && (myvision.getTryRobList(robotListLocal)) == true)
+        {
+            //robotListLocal = myvision.getRobList();
+            for (std::vector < std::pair < std::string, int >> ::iterator myiter = robVector.begin(); myiter != robVector.end(); ++myiter)
+            {
+                ss.str("");
+                ss << "/" << (*myiter).first << "/base_link";
+                int index = (*myiter).second;
+                transform.setOrigin(tf::Vector3(robotListLocal.robList[index].coord.x/1000, robotListLocal.robList[index].coord.y/1000, 0));
+                transform.setRotation(tf::Quaternion(0, 0, robotListLocal.robList[index].orientation/360*2*M_PI));
+                br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", ss.str()));
+                std::cout << ss.str() << "\ttf_trasl(" << robotListLocal.robList[index].coord.x/1000 <<"," << robotListLocal.robList[index].coord.y/1000 << "," << 0 << ")" << std::endl;
+                std::cout << ss.str() << "\ttf_rot(" << 0 <<","<<  0 <<"," << robotListLocal.robList[index].orientation/360*2*M_PI << ")" << std::endl;
+            }
         }
         ros::spinOnce();
         r.sleep();
@@ -214,7 +276,6 @@ int main( int argc, char** argv )
 
 }
 
-
 void ConfigInit( autoconf_status_t& obj )
 {
     obj.state = init;
@@ -222,17 +283,17 @@ void ConfigInit( autoconf_status_t& obj )
     obj.robCounter = 0;
     obj.visionRobnum = 5;
     obj.delayCounter = 0;
-    obj.delayThreshold = 240;
+    obj.delayThreshold = 300;
 }
 
-bool robothasmoved (int k, saetta_vision::RobotList_t list1, saetta_vision::RobotList_t list2)
+bool robothasmoved( int k, saetta_vision::RobotList_t list1, saetta_vision::RobotList_t list2 )
 {
-    float distx, disty,dist;
-    distx = powf(2,(list1.robList[k].coord.x - list2.robList[k].coord.x));
-    disty = powf(2,(list1.robList[k].coord.y - list2.robList[k].coord.y));
-    dist = sqrt(distx+disty);
-    if (dist >= 10)
-	return true;
+    float distx, disty, dist;
+    distx = powf(list1.robList[k].coord.x - list2.robList[k].coord.x, 2);
+    disty = powf(list1.robList[k].coord.y - list2.robList[k].coord.y, 2);
+    dist = sqrtf(distx + disty);
+    if (dist >= 50)
+        return true;
     return false;
 
 }
