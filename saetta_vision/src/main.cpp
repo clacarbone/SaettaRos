@@ -135,7 +135,7 @@ int main( int argc, char** argv )
                     break;
 
                 case move:
-		    originalRobotListLocal = myvision.getRobList();
+                    originalRobotListLocal = myvision.getRobList();
                     std::cout << "Issuing move command." <<std::endl;
                     autoConfiguration.robName = "";
                     ss.str("");
@@ -178,7 +178,7 @@ int main( int argc, char** argv )
                     movedRobotListLocal = myvision.getRobList();
                     for (int k = 0; k < ROB_MAX; k++)
                     {
-                        if (robothasmoved(k))
+                        if (robothasmoved(k, originalRobotListLocal, movedRobotListLocal))
                         {
                             std::pair<std::string, int> loclpair(autoConfiguration.robName, k);
                             robVector.push_back(loclpair);
@@ -232,7 +232,7 @@ bool robothasmoved (int k, saetta_vision::RobotList_t list1, saetta_vision::Robo
     disty = powf(2,(list1.robList[k].coord.y - list2.robList[k].coord.y));
     dist = sqrt(distx+disty);
     if (dist >= 10)
-	return true:
+	return true;
     return false;
 
 }

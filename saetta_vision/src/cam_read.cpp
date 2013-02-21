@@ -25,7 +25,7 @@ class myclass
 public:
     myclass() {};
     virtual ~myclass() {};
-    void imageCallback(const sensor_msgs::ImageConstPtr& msg)
+    void imgCallback(const sensor_msgs::ImageConstPtr& msg)
     {
         sensor_msgs::CvBridge bridge;
         try
@@ -49,7 +49,8 @@ int main(int argc, char **argv)
     cvNamedWindow("view");
     cvStartWindowThread();
     image_transport::ImageTransport it(nh);
-    image_transport::Subscriber sub = it.subscribe("camera/image", 1, (void*)&myclass::imageCallback, test);
+    //image_transport::Subscriber sub = it.subscribe("camera/image", 1, (void*)&myclass::imageCallback, test);
+    image_transport::Subscriber sub = it.subscribe("camera/image",1, imageCallback);
     ros::spin();
     cvDestroyWindow("view");
 }
