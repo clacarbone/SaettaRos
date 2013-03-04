@@ -82,11 +82,12 @@ namespace saetta_vision
             cvResizeWindow("Video", configuration.window_size.first, configuration.window_size.second);
             cvResizeWindow("Output", configuration.window_size.first, configuration.window_size.second);
         }
-        lowTrsh1 = cvScalar(0, 254, 50);
-        highTrsh1 = cvScalar(58, 256, 134);
-
-        lowTsrh2 = cvScalar(58, 254, 68);
-        highTsrh2 = cvScalar(78, 256, 136);
+	//head - red
+        lowTrsh1 = cvScalar(0,250,50);
+        highTrsh1 = cvScalar(0,256,200);
+	//tail - green
+        lowTsrh2 = cvScalar(55,229,51);
+        highTsrh2 = cvScalar(79,256,192);
 
 
 

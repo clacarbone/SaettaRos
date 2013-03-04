@@ -1,8 +1,9 @@
 <launch>
 <!--	<machine name="Panda01" address="LabRob-Panda-01" user="panda" default="false" env-loader="/opt/ros/fuerte/env.sh" timeout="60" /> -->
+	<machine name="Panda00" address="LabRob-Panda-00" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" /> -->
 	<machine name="Panda01" address="LabRob-Panda-01" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" />
 	<machine name="Panda02" address="LabRob-Panda-02" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" />
-	<machine name="Panda03" address="LabRob-Panda-03" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" />
+	<machine name="Panda03" address="LabRob-Panda-03" user="panda" default="false" env-loader="/home/panda/rosenv.sh" timeout="180" /> -->
 <!--	<machine name="lappy" address="FCD-04-Ubuntu" user="erupter" default="false" env-loader="/opt/ros/fuerte/env.sh"/> -->
 
 	<!-- send Saetta urdf to param server -->
