@@ -19,6 +19,7 @@
 #include <math.h>
 #include <tf/transform_broadcaster.h>
 
+#define LOOP_RATE	50 //Hz
 /*
  * 
  */
@@ -27,13 +28,14 @@ typedef enum
 {
     init = 0,
     err,
-    waiting,
+    wait,
     move,
     checkmoving,
     nextrob,
     configured,
     resumed,
-    delay
+    pausing,
+    sendmv
 } autoconf_states_t;
 
 typedef struct
@@ -41,7 +43,7 @@ typedef struct
     autoconf_states_t state, next_state;
     int index;
     std::string visionPrefix, robName, visionRobCtrl;
-    int robCounter, visionRobnum, delayCounter, delayThreshold;
+    int robCounter, visionRobnum, delayCounter, delayTsrh, pauseCounter, pauseTsrh;
 } autoconf_status_t;
 
 template <typename Type1, typename Type2>
@@ -67,7 +69,8 @@ bool VectorContains( std::vector<Type1> vect, Type1 elem )
     else return false;
 }
 bool robothasmoved( int k, saetta_vision::RobotList_t list1, saetta_vision::RobotList_t list2 );
-void ConfigInit( autoconf_status_t& obj );
+void ConfigInit( autoconf_status_t& obj, unsigned int sec1, unsigned int sec2);
+void ConfigSetPause ( autoconf_status_t& obj, unsigned int secs);
 
 int main( int argc, char** argv )
 {
@@ -77,7 +80,7 @@ int main( int argc, char** argv )
     saetta_vision::VisionConfig myconfig;
     int sizet;
     autoconf_status_t autoConfiguration;
-    ConfigInit(autoConfiguration);
+    ConfigInit(autoConfiguration, 5, 2);
     std::stringstream ss;
     std::vector < std::pair < std::string, int >> robVector;
     std::string topic;
@@ -105,7 +108,7 @@ int main( int argc, char** argv )
     saetta_vision::Vision myvision(myconfig);
     myvision.Start();
     autoConfiguration.state = autoconf_states_t::init;
-    ros::Rate r(50);
+    ros::Rate r(LOOP_RATE);
     ros::Publisher pubCmdVel;
     tf::TransformBroadcaster br;
     tf::Transform transform;
@@ -144,7 +147,7 @@ int main( int argc, char** argv )
                     }
                     std::cout << "Ctrl Topic: " << autoConfiguration.visionRobCtrl << std::endl << "Holding off until vision stabilizes..." << std::endl << std::endl;
                     
-                    autoConfiguration.state = autoconf_states_t::delay;
+                    autoConfiguration.state = autoconf_states_t::pausing;
                     autoConfiguration.next_state = autoconf_states_t::move;
                     
                     break;
@@ -163,32 +166,35 @@ int main( int argc, char** argv )
                     topic = ("");
                     topic = ss.str();
                     pubCmdVel = n.advertise<saetta_msgs::cmd_vel > (topic, 1);
-                    autoConfiguration.state = waiting;
+                    autoConfiguration.state = pausing;
+		    autoConfiguration.next_state = sendmv;
+		    ConfigSetPause(autoConfiguration, 2);
                     std::cout << "Waiting for movement... " << std::endl;
                     break;
 
                 case err:
                     break;
 
-
+		case sendmv:
+		    pubCmdVel.publish(vel);
+		    autoConfiguration.state = wait;
                     break;
-                case waiting:
-                    if (autoConfiguration.delayCounter == 120)
-                        pubCmdVel.publish(vel);
+
+                case wait:
                     autoConfiguration.delayCounter++;
-                    if (autoConfiguration.delayCounter >= autoConfiguration.delayThreshold)
+                    if (autoConfiguration.delayCounter >= autoConfiguration.delayTsrh)
                     {
                         autoConfiguration.state = checkmoving;
                         autoConfiguration.delayCounter = 0;
                     }
                     break;
                     
-                case delay:
-                    autoConfiguration.delayCounter++;
-                    if (autoConfiguration.delayCounter >= autoConfiguration.delayThreshold)
+                case pausing:
+                    autoConfiguration.pauseCounter++;
+                    if (autoConfiguration.pauseCounter >= autoConfiguration.pauseTsrh)
                     {
                         autoConfiguration.state = autoConfiguration.next_state;
-                        autoConfiguration.delayCounter = 0;
+                        autoConfiguration.pauseCounter = 0;
                     }
                     break;
 
@@ -276,14 +282,23 @@ int main( int argc, char** argv )
 
 }
 
-void ConfigInit( autoconf_status_t& obj )
+void ConfigInit( autoconf_status_t& obj ,unsigned int sec1, unsigned int sec2)
 {
     obj.state = init;
     obj.index = 0;
     obj.robCounter = 0;
     obj.visionRobnum = 5;
     obj.delayCounter = 0;
-    obj.delayThreshold = 300;
+    obj.delayTsrh = sec1 * LOOP_RATE;
+    obj.pauseCounter=0;
+    obj.pauseTsrh = sec2 * LOOP_RATE;
+}
+
+void ConfigSetPause ( autoconf_status_t& obj, unsigned int secs)
+{
+   obj.pauseCounter=0;
+   obj.pauseTsrh = secs * LOOP_RATE;
+
 }
 
 bool robothasmoved( int k, saetta_vision::RobotList_t list1, saetta_vision::RobotList_t list2 )

@@ -5,7 +5,6 @@
 #include <opencv/highgui.h>
 #include <cv_bridge/CvBridge.h>
 #include <Vision2.hpp>
-
 #include "Vision.hpp"
 
 void imageCallback(const sensor_msgs::ImageConstPtr& msg)
@@ -49,8 +48,8 @@ int main(int argc, char **argv)
     cvNamedWindow("view");
     cvStartWindowThread();
     image_transport::ImageTransport it(nh);
-    image_transport::Subscriber sub = it.subscribe("camera/image", 1, (void*)&myclass::imgCallback, VoidPtr(&test));
-    //image_transport::Subscriber sub = it.subscribe("camera/image",1, imageCallback);
+    //image_transport::Subscriber sub = it.subscribe("camera/image", 1, (void*)&myclass::imgCallback, VoidPtr(&test));
+    image_transport::Subscriber sub = it.subscribe("camera/image",1, imageCallback);
     ros::spin();
     cvDestroyWindow("view");
 }
