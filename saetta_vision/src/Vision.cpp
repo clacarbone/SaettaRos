@@ -26,6 +26,7 @@ namespace saetta_vision
         //    capture = cvCaptureFromCAM(0);    
     }*/
 
+
     Vision::Vision( VisionConfig& config ) : winHndlMap( ), thread_camera_analyzer( &Vision::capture_loop, this ), pixelMap( config.camera_size.first, config.camera_size.second )
     {
         capture = 0;
@@ -92,7 +93,8 @@ namespace saetta_vision
 
 
         // Load Map
-        Vision::InitPixelMap(configuration.map_name.c_str());
+        if(Vision::InitPixelMap(configuration.map_name.c_str()) != 0)
+	    return -1;
 
         frame = cvQueryFrame(capture);
         frame = cvQueryFrame(capture);
@@ -396,6 +398,9 @@ namespace saetta_vision
 
         if (map == NULL)
         {
+	    char mystr[1024];
+	    getcwd(mystr, 1024);
+	    printf("Current path: \"%s\"\n", mystr);
             printf("InitPixelMap: failed to open file\n");
             printf("%s\n", map_file);
             // getchar();

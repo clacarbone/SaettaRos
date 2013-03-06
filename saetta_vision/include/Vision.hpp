@@ -20,6 +20,8 @@
 
 #include <gtk/gtk.h>
 
+#include <unistd.h>
+
 #define MAX_LOST                100000000
 #define ROB_MAX                 15
 #define MAX_LINE_LEN            4096
