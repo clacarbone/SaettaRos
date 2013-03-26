@@ -27,7 +27,7 @@ namespace saetta_vision
     }*/
 
 
-    Vision::Vision( VisionConfig& config ) : winHndlMap( ), thread_camera_analyzer( &Vision::capture_loop, this ), pixelMap( config.camera_size.first, config.camera_size.second )
+    Vision::Vision( VisionConfig& config ) : winHndlMap( ), thread_camera_analyzer( &Vision::capture_loop, this ), pixelMap( config.camera_size.first*config.camera_size.second )
     {
         capture = 0;
         frame = 0;
@@ -57,8 +57,8 @@ namespace saetta_vision
             return -1;
         }
 
-        cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH, configuration.camera_size.first);
-        cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, configuration.camera_size.second);
+        cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_WIDTH, 1280);
+        cvSetCaptureProperty(capture, CV_CAP_PROP_FRAME_HEIGHT, 720);
 
         if (configuration.open_windows)
         {
@@ -121,13 +121,13 @@ namespace saetta_vision
 
     bool Vision::getTryRobList(RobotList_t& roblist  )
     {
-        if (mutexRobListAccess.try_lock())
-        {
+        //if (mutexRobListAccess.try_lock())
+        //{
             roblist = avRobList;
-            mutexRobListAccess.unlock();
+            //mutexRobListAccess.unlock();
             return true;
-        }
-        return false;
+        //}
+        //return false;
     }
 
     void Vision::capture_loop( )
@@ -358,9 +358,9 @@ namespace saetta_vision
 
         // Matching The List of Potential Robots with previous List of Robots
         //    updateRobotList_tAndrea(&avRobList, potRobList);
-        mutexRobListAccess.lock();
+   //     mutexRobListAccess.lock();
         Robot::updateRobotList(&avRobList, potRobList, distMatrix);
-        mutexRobListAccess.unlock();
+   //     mutexRobListAccess.unlock();
         /*
             // Print robots
             for (i = 0; i < ROB_MAX; i++) {
@@ -425,10 +425,12 @@ namespace saetta_vision
             else
             {
                 sscanf(line, "%f\t%f\t%f\t%f", &indiceRiga, &indiceColonna, &x_coord, &y_coord);
-                pixelMap(indiceRiga, indiceColonna).first = x_coord;
-                pixelMap(indiceRiga, indiceColonna).second = y_coord;
+                //pixelMap(indiceRiga, indiceColonna).first = x_coord;
+                //pixelMap(indiceRiga, indiceColonna).second = y_coord;
                 //                        printf("%2.2f %2.2f \n",pixelMap.x_coord[i],pixelMap.y_coord[i]);
-            }
+                pixelMap[i].first= x_coord;
+                pixelMap[i].second = y_coord;	            
+		}
         }
 
         fclose(map);
@@ -471,7 +473,7 @@ namespace saetta_vision
         open_windows = show;
     }
 
-    Robot_t Robot::createRobot( CvPoint2D32f h, CvPoint2D32f t, Matrix<std::pair<float, float >> &pixelMap )
+    Robot_t Robot::createRobot( CvPoint2D32f h, CvPoint2D32f t, std::vector<std::pair<float, float >> &pixelMap )
     {
 
         Robot_t rob;
@@ -502,14 +504,13 @@ namespace saetta_vision
 
     }
 
-    CvPoint2D32f Robot::getGlobalCoord( int x, int y, Matrix<std::pair<float, float >> &pixelMap )
+    CvPoint2D32f Robot::getGlobalCoord( int x, int y, std::vector<std::pair<float, float >> &pixelMap )
     {
 
         CvPoint2D32f coord;
-        int index = y * pixelMap.cols() + x;
+	int index = y * 1280 + x;
         coord.x = pixelMap[index].first;
         coord.y = pixelMap[index].second;
-
         return coord;
 
     }
@@ -546,7 +547,7 @@ namespace saetta_vision
     {
         int i;
         // Allowed movement
-        float distTh = 25; //mm
+        float distTh = 100; //mm
 
         // If any potential robot  has been detected... 
         if (potRobList.robNum > 0)
@@ -634,7 +635,7 @@ namespace saetta_vision
 
                                     assigned[i] = 1; //aggiorno rob associati
                                     associated++;
-                                    //printf ( "Robot %d : (%f, %f, %f)\n", i, avRobList->robList[i].coord.x, avRobList->robList[i].coord.y, avRobList->robList[i].orientation );
+                                    //printf ( "Robot %d : (%5.2f, %5.2f, %5.2f), px(%5.2f,%5.2f)\n", i, avRobList->robList[i].coord.x, avRobList->robList[i].coord.y, avRobList->robList[i].orientation, avRobList->robList[i].center.x, avRobList->robList[i].center.y );
                                     if (minDist_av_pot > 5)
                                         avRobList->robList[i].moving = true;
                                     else

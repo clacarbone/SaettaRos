@@ -117,6 +117,7 @@ int main( int argc, char** argv )
     tf::TransformBroadcaster br;
     tf::Transform transform;
     float distx, disty, dist;
+    
     while (n.ok())
     {
 
@@ -266,6 +267,7 @@ int main( int argc, char** argv )
         {
             //robotListLocal = myvision.getRobList();
 	    filterRobList(robotListOld, robotListLocal);
+		std::cout << std::endl;
             for (std::vector < std::pair < std::string, int >> ::iterator myiter = robVector.begin(); myiter != robVector.end(); ++myiter)
             {
                 ss.str("");
@@ -273,7 +275,8 @@ int main( int argc, char** argv )
                 int index = (*myiter).second;
                 transform.setOrigin(tf::Vector3(robotListLocal.robList[index].coord.x/1000, robotListLocal.robList[index].coord.y/1000, 0));
                 transform.setRotation(tf::Quaternion(0, 0, robotListLocal.robList[index].orientation/360*2*M_PI));
-                br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world", ss.str()));
+                br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "world",ss.str()));
+		std::cout << (*myiter).first << "  X: " <<  robotListLocal.robList[index].coord.x << " Y: " << robotListLocal.robList[index].coord.y << " Cnt " <<  robotListLocal.robList[index].center.x << ":" <<  robotListLocal.robList[index].center.y << std::endl;
                 //std::cout << ss.str() << "\ttf_trasl(" << robotListLocal.robList[index].coord.x/1000 <<"," << robotListLocal.robList[index].coord.y/1000 << "," << 0 << ")" << std::endl;
                 //std::cout << ss.str() << "\ttf_rot(" << 0 <<","<<  0 <<"," << robotListLocal.robList[index].orientation/360*2*M_PI << ")" << std::endl;
             }

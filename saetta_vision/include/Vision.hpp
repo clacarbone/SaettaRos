@@ -43,7 +43,7 @@ namespace saetta_vision
         Type1& operator() (unsigned int row, unsigned int col)
         {
             return innVector.at(row * _cols + col);
-        }
+	}
 
         Type1& operator[] (unsigned int index)
         {
@@ -141,7 +141,7 @@ namespace saetta_vision
     class Robot
     {
     public:
-        static inline Robot_t createRobot(CvPoint2D32f h, CvPoint2D32f t, Matrix<std::pair<float, float >> &pixelMap);
+        static inline Robot_t createRobot(CvPoint2D32f h, CvPoint2D32f t, std::vector<std::pair<float, float >> &pixelMap);
         static inline void printRobot(Robot_t rob);
         static inline int findNearestRobot(int from, float (&distMat)[ROB_MAX][ROB_MAX]);
         static inline void deactivateRob(int id, RobotList_t *avRobList, float (&distMat)[ROB_MAX][ROB_MAX]);
@@ -152,7 +152,7 @@ namespace saetta_vision
         static inline void computeDistMatrix(RobotList_t *avRobList, RobotList_t potRobList, float (&distMat)[ROB_MAX][ROB_MAX]);
         static inline void associateRob2Measure(int idAv, int idPot, RobotList_t *avRobList, RobotList_t *potRobList, float (&distMat)[ROB_MAX][ROB_MAX]);
         static inline int findNearestMeasure(int from, float (&distMat)[ROB_MAX][ROB_MAX]);
-        static inline CvPoint2D32f getGlobalCoord(int x, int y, Matrix<std::pair<float, float >> &pixelMap);
+        static inline CvPoint2D32f getGlobalCoord(int x, int y, std::vector<std::pair<float, float >> &pixelMap);
     private:
 
     };
@@ -186,10 +186,12 @@ namespace saetta_vision
         bool th_ok;
         float distMatrix[ROB_MAX][ROB_MAX];
         float minDistMatrix[ROB_MAX][ROB_MAX];
-        Matrix<std::pair<float, float >> pixelMap;
+        //Matrix<std::pair<float, float >> pixelMap;
         std::mutex mutexRobListAccess;
         bool data_avail;
-        //IplImage* imgTracking;
+        std::vector<std::pair<float, float >> pixelMap;
+
+	//IplImage* imgTracking;
 
     };
 
