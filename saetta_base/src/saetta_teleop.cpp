@@ -83,7 +83,7 @@ void TeleopSaetta::keyLoop()
 	command_turn = copysign(pow(command_turn,2),command_turn);
 	command_vel = copysign(pow(command_vel,2),command_vel);
         vel.angular=2*command_turn;
-        vel.linear=4*command_vel;
+        vel.linear=10*command_vel;
         if (vel.linear >= -0.3 && vel.linear <= 0.3)
             vel.linear = 0.0;
         if (vel.angular >= -0.3 && vel.angular <= 0.3)
