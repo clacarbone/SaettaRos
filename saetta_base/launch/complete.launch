@@ -15,9 +15,9 @@
 <!--	<param name="tf_prefix" value="/saetta/vehicle01"/> -->
 	
 <!--	<node pkg="tf" type="static_transform_publisher" name="tf_static_laser" args="0 0 0 0 0 0 world generic_laser 10" /> -->
-<!--	<node pkg="tf" type="static_transform_publisher" name="tf_static_base_1" args="0 0 0 0 0 0 world robot_1/base_link 100" />
-	<node pkg="tf" type="static_transform_publisher" name="tf_static_base_2" args="-0.5 -0.5 0 0 0 0 world robot_2/base_link 100" />
-	<node pkg="tf" type="static_transform_publisher" name="tf_static_base_3" args="0.5 -0.5 0 0 0 0 world robot_3/base_link 100" />
+<!--	<node pkg="tf" type="static_transform_publisher" name="tf_static_base_1" args="0 0 0 0 0 0 world robot_1/base_link 10" />
+	<node pkg="tf" type="static_transform_publisher" name="tf_static_base_2" args="-0.5 -0.5 0 0 0 0 world robot_2/base_link 10" />
+	<node pkg="tf" type="static_transform_publisher" name="tf_static_base_3" args="0.5 -0.5 0 0 0 0 world robot_3/base_link 10" />
 -->
 	<!-- CAM NODE -->
 <!--
@@ -57,10 +57,10 @@
 		<node pkg="robot_state_publisher" type="state_publisher" name="state_publisher"/>		
 
 		<!-- Saetta Nodes -->
-		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda01">
+<!--		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda01">
 			<remap from="/saetta/velocity" to="cmd_vel"/>
 		</node>
-
+-->
 		<!-- Hokuyo Base Node -->
 <!--		<param name="use_rep_117" value="true"/>
 		<node pkg="hokuyo_node" type="hokuyo_node" name="laser" machine="Panda01" respawn="true">
@@ -73,8 +73,9 @@
 <!-- 			<param name="max_ang" type="double" value="1.0" /> -->
 <!--			<param name="frame_id" type="string" value="/robot_1/laser" />
 		</node>
--->
+
 		<node pkg="tf" type="static_transform_publisher" name="tf_static" args="0.1 0 0.1 0 0 0 body laser 10" />"
+-->
 		</group>
 	<!-- == END ROBOT 01 == -->
 
@@ -88,9 +89,10 @@
 		<node pkg="robot_state_publisher" type="state_publisher" name="state_publisher"/>		
 
 		<!-- Saetta Nodes -->
-		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda02">
+<!--		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda02">
 			<remap from="/saetta/velocity" to="cmd_vel"/>
 		</node>
+-->
 
 		<!-- Hokuyo Base Node -->
 <!--		<param name="use_rep_117" value="true"/>
@@ -104,8 +106,9 @@
 <!-- 			<param name="max_ang" type="double" value="1.0" /> -->
 <!--			<param name="frame_id" type="string" value="/robot_1/laser" />
 		</node>
--->
+
 		<node pkg="tf" type="static_transform_publisher" name="tf_static" args="0.1 0 0.1 0 0 0 body laser 10" />"
+-->
 		</group>
 	<!-- == END ROBOT 02 == -->
 
@@ -119,9 +122,10 @@
 		<node pkg="robot_state_publisher" type="state_publisher" name="state_publisher"/>		
 
 		<!-- Saetta Nodes -->
-		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda03">
+<!--		<node pkg="saetta_base" type="base" name="SaettaBase" machine="Panda03">
 			<remap from="/saetta/velocity" to="cmd_vel"/>
 		</node>
+-->
 
 		<!-- Hokuyo Base Node -->
 <!--		<param name="use_rep_117" value="true"/>
@@ -135,8 +139,9 @@
 <!-- 			<param name="max_ang" type="double" value="1.0" /> -->
 <!--			<param name="frame_id" type="string" value="/robot_1/laser" />
 		</node>
--->
+
 		<node pkg="tf" type="static_transform_publisher" name="tf_static" args="0.1 0 0.1 0 0 0 body laser 10" />"
+-->
 		</group>
 	<!-- == END ROBOT 03 == -->
 

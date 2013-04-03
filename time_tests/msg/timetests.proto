@@ -1,0 +1,14 @@
+package TimeTests;
+
+message Machine {
+  required string machine_name = 1;
+  optional float ntp_delay = 2;
+  optional float ntp_offset = 3;
+  optional float ntp_jitter = 4;
+  required uint64 timestamp = 5;
+}
+
+message Traceroute {
+  required string header = 1;
+  repeated Machine machine = 2;
+}

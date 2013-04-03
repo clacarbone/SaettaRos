@@ -1,0 +1,14 @@
+<package>
+  <description brief="saetta_vision">
+Saetta vision  </description>
+  <author>Claudio Carbone</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <depend package="protobuf" />
+  <depend package="std_msgs" />
+</package>
+
+

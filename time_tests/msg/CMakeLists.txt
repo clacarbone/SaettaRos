@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 2.8)
+find_package(Protobuf REQUIRED)
+include_directories(${PROTOBUF_INCLUDE_DIRS})
+set (PROTO_SRCS ${PROJECT_SOURCE_DIR}/../src/timetests.cpp)
+set (PROTO_HDRS ${PROJECT_SOURCE_DIR}/../include/timetests.hpp)
+
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+IF(PROTOBUF_FOUND)
+    INCLUDE_DIRECTORIES(${PROTOBUF_INCLUDE_DIRS})
+    INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+    PROTOBUF_GENERATE_CPP(PROTO_SRCS PROTO_HDRS timetests.proto)
+ENDIF(PROTOBUF_FOUND)
+
