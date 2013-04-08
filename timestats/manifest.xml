@@ -1,6 +1,6 @@
 <package>
-  <description brief="saetta_vision">
-Saetta vision  </description>
+  <description brief="TimeStats">
+Saetta TimeStats generation and aggregation nodes.  </description>
   <author>Claudio Carbone</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
@@ -8,7 +8,8 @@ Saetta vision  </description>
   <depend package="rospy"/>
   <depend package="roscpp"/>
   <depend package="protobuf" />
-  <depend package="std_msgs" />
+  <depend package="dynamic_reconfigure" />
+  <depend package="roslang" />
 </package>
 
 

@@ -1,0 +1,60 @@
+<launch>
+	<!-- == ROBOT 01 == -->
+		<param name="robot1_stats_orig/master" value="true"/>
+		<node pkg="timestats" type="ts_generator" name="robot1_stats_orig">
+			<remap from="input" to ="robot1_end"/>
+			<remap from="output" to ="robot1_start"/>
+		</node>
+
+		<node pkg="timestats" type="ts_generator" name="robot1_stats_link1">
+			<remap from="input" to ="robot1_start"/>
+			<remap from="output" to ="link1"/>
+		</node>
+
+		<node pkg="timestats" type="ts_generator" name="robot1_stats_link2">
+			<remap from="input" to ="link1"/>
+			<remap from="output" to ="robot1_end"/>
+		</node>
+
+	<!-- == END ROBOT 01 == -->
+
+
+	<!-- == ROBOT 02 == -->
+		<param name="robot2_stats_orig/master" value="true"/>
+		<node pkg="timestats" type="ts_generator" name="robot2_stats_orig">
+			<remap from="input" to ="robot2_end"/>
+			<remap from="output" to ="robot2_start"/>
+		</node>
+
+		<node pkg="timestats" type="ts_generator" name="robot2_stats_link1">
+			<remap from="input" to ="robot2_start"/>
+			<remap from="output" to ="link2"/>
+		</node>
+
+		<node pkg="timestats" type="ts_generator" name="robot2_stats_link2">
+			<remap from="input" to ="link2"/>
+			<remap from="output" to ="robot2_end"/>
+		</node>
+	<!-- == END ROBOT 02 == -->
+
+
+	<!-- == ROBOT 03 == -->
+		<param name="robot3_stats_orig/master" value="true"/>
+		<node pkg="timestats" type="ts_generator" name="robot3_stats_orig">
+			<remap from="input" to ="robot3_end"/>
+			<remap from="output" to ="robot3_start"/>
+		</node>
+
+		<node pkg="timestats" type="ts_generator" name="robot3_stats_link1">
+			<remap from="input" to ="robot3_start"/>
+			<remap from="output" to ="link3"/>
+		</node>
+
+		<node pkg="timestats" type="ts_generator" name="robot3_stats_link2">
+			<remap from="input" to ="link3"/>
+			<remap from="output" to ="robot3_end"/>
+		</node>
+	<!-- == END ROBOT 03 == -->
+
+	<node pkg="timestats" type="ts_monitor" name="aggregator"/>
+</launch>
