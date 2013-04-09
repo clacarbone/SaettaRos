@@ -7,7 +7,6 @@ Saetta TimeStats generation and aggregation nodes.  </description>
   <url></url>
   <depend package="rospy"/>
   <depend package="roscpp"/>
-  <depend package="protobuf" />
   <depend package="dynamic_reconfigure" />
   <depend package="roslang" />
 </package>
