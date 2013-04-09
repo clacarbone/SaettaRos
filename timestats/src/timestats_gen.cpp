@@ -80,11 +80,12 @@ int main(int argc, char** argv)
     ros::Publisher localpub, statspub;
     ros::Subscriber localsub;
     localpub = n.advertise<timestats::Report> (topic_output.c_str(), 1);
-    statspub = n.advertise<timestats::StatsInfo>("timestats_pool", 1);
+
     localsub = n.subscribe(topic_input.c_str(), 1, subscriberCallback);
     _node_data = new TimeStatistics::accumulator("node", filter);
     if (master == 1)
     {
+        statspub = n.advertise<timestats::StatsInfo>("timestats_pool", 1);
         std::cout << "Running as master" << std::endl << "Timer delay: " << delay << "s" << std::endl << "Node name: " << MachineName << std::endl;
         ros::Timer timer = n.createTimer(ros::Duration(delay), timerCallback);
         while (n.ok())
