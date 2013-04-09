@@ -104,7 +104,7 @@
 		</group>
 	<!-- == END ROBOT 03 == -->
 
-
+	<node pkg="timestats" type="ts_monitor" name="aggregator"/>
 
 
 </launch>
