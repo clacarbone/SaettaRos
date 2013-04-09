@@ -1,0 +1,18 @@
+<package>
+  <description brief="saetta_vision">
+Saetta vision  </description>
+  <author>Claudio Carbone</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url></url>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+  <rosdep name="OpenCV 2.4.0"/>
+  <depend package="saetta_msgs" />
+  <depend package="image_transport" />
+  <depend package="opencv2" />
+  <depend package="cv_bridge" />
+  <depend package="tf" />
+</package>
+
+

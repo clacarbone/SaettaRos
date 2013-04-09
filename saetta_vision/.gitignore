@@ -1,0 +1,13 @@
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+/RosVisionSystem
+*/nbproject
+*/dist
+*/build
+*/bin
+*/lib
+*~
+*.save
+Map.txt
+src/cvblobs8.3_linux/libblob.a
