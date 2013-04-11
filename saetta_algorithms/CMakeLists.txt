@@ -29,6 +29,7 @@ rosbuild_find_ros_package (tf)
 #common commands for building c++ executables and libraries
 rosbuild_add_boost_directories()
 rosbuild_add_executable(rigidform src/rigidform.cpp)
+rosbuild_add_executable(rigidverifier src/rigidverifier.cpp)
 rosbuild_add_executable(tf_broadcaster src/tf_broadcaster.cpp)
 rosbuild_add_executable(stop_all src/saetta_stop.cpp)
 rosbuild_link_boost(rigidform thread)
