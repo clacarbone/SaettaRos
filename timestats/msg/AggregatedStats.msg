@@ -1,2 +1,2 @@
 string header
-StatsInfo[] links
+extStatsInfo[] links
