@@ -30,13 +30,13 @@ public:
     void addPingMs(T value)
     {
         ping.assignFromMs(value);
-        pingaver.assignFromMs((pingaver.ms() * filt_coeff) + (1-filt_coeff) * value);
+        pingaver.assignFromMs((pingaver.ms() * (1-filt_coeff)) +  filt_coeff* value);
     }
     template <typename T>
     void addJitterMs(T value)
     {
         jitter.assignFromMs(value);
-        jitteraver.assignFromMs((jitteraver.ms() * filt_coeff) + (1-filt_coeff) * value);
+        jitteraver.assignFromMs((jitteraver.ms() * (1-filt_coeff)) +  filt_coeff* value);
     }    
 };
 std::map<std::string, timedata> _datamap;
@@ -61,6 +61,7 @@ void timerCallback(const ros::TimerEvent&)
         newstats.ping = (*_datamap_iter).second.ping.ms();
         newstats.ping_LP = (*_datamap_iter).second.pingaver.ms();
         newstats.jitter_LP = (*_datamap_iter).second.jitteraver.ms();
+        newstats.filter_coeff = (*_datamap_iter).second.filt_coeff;
         newstatsmsg.links.push_back(newstats);
     }
     if (_datamap.size() > 0)
