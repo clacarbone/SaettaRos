@@ -12,6 +12,7 @@
 <!--  <depend package="driver_base" /> -->
   <depend package="tf" />
   <depend package="saetta_msgs" />
+  <depend package="std_msgs" />
 </package>
 
 
