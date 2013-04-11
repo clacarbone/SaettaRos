@@ -10,7 +10,7 @@
 
 std::string MachineName;
 int counter = 0, filter = 0;
-double filt_coeff = 1.0;
+double filt_coeff = 0;
 std::map<std::string, double> mapPingFiltered;
 std::map<std::string, double>::iterator mapiterPingFiltered;
 std::map<std::string, double> mapJitterFiltered;
@@ -30,13 +30,13 @@ public:
     void addPingMs(T value)
     {
         ping.assignFromMs(value);
-        pingaver.assignFromMs((pingaver.ms() * (1-filt_coeff)) +  filt_coeff* value);
+        pingaver.assignFromMs((pingaver.ms() * filt_coeff) +  (1-filt_coeff) * value);
     }
     template <typename T>
     void addJitterMs(T value)
     {
         jitter.assignFromMs(value);
-        jitteraver.assignFromMs((jitteraver.ms() * (1-filt_coeff)) +  filt_coeff* value);
+        jitteraver.assignFromMs((jitteraver.ms() * filt_coeff) +  (1-filt_coeff) * value);
     }    
 };
 std::map<std::string, timedata> _datamap;
@@ -108,7 +108,7 @@ int main(int argc, char** argv)
     ros::Publisher localpub;
     localsub = n.subscribe("timestats_pool", 1, subscriberCallback);
     localpub = n.advertise<timestats::AggregatedStats > ("timestats_aggregated", 1);
-    private_handle_.param("filt_coeff", filt_coeff, double(1.0));
+    private_handle_.param("filt_coeff", filt_coeff, double(0.0));
     MachineName.assign(ros::this_node::getName());
     ros::Rate r(2000);
     ros::Timer timer = n.createTimer(ros::Duration(0.04), timerCallback);
