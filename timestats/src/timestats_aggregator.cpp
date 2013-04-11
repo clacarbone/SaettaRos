@@ -89,10 +89,10 @@ void subscriberCallback(const timestats::StatsInfo& msg)
             mydata.filt_coeff = filt_coeff;
             mydata.mov_aver_size = msg.filter_size;
             mydata.name.assign(msg.name);
-            //mydata.ping.assignFromMs(msg.ping);
-            mydata.addPingMs(msg.ping);
-            //mydata.jitter.assignFromMs(msg.jitter);
-            mydata.addJitterMs(msg.jitter);
+            mydata.ping.assignFromMs(msg.ping);
+            //mydata.addPingMs(msg.ping);
+            mydata.jitter.assignFromMs(msg.jitter);
+            //mydata.addJitterMs(msg.jitter);
             _datamap.insert(std::make_pair(msg.name, mydata));
         }
     
