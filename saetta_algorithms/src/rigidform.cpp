@@ -3,9 +3,10 @@
 #define LOOP_RATE	50 	// Hz
 #define	MAX_SPEED	0.2	// m/s
 #define PIVOT_D_AXIS	0.8	// m
-#define SPEED_MULT	15.0
-#define EXT_SPD		2.0
-#define ANG_MULT	1.5
+#define SPEED_MULT	10.0
+#define SPD_TSRH	1.0
+#define ANG_MULT	2.0
+#define ERR_TSRH	0.000625
 
 bool publish = false;
 
@@ -60,10 +61,11 @@ int main(int argc, char** argv)
     // Tell ROS how fast to run this node.
 
     ros::Rate r(LOOP_RATE);
-    ros::Publisher pubCmdVel1, pubCmdVel2, pubCmdVel3;
+    ros::Publisher pubCmdVel1, pubCmdVel2, pubCmdVel3, pubStatus;
     pubCmdVel1 = n.advertise<saetta_msgs::cmd_vel > ("/robot_1/cmd_vel", 1);
     pubCmdVel2 = n.advertise<saetta_msgs::cmd_vel > ("/robot_2/cmd_vel", 1);
     pubCmdVel3 = n.advertise<saetta_msgs::cmd_vel > ("/robot_3/cmd_vel", 1);
+    pubStatus = n.advertise<std_msgs::Bool > ("/rigidform_service",1);
     tf::TransformListener listener;
     tf::StampedTransform transform1, transform2, transform3;
     tf::Vector3 vactual1, vactual2, vactual3, cmd1, cmd2, cmd3, *tmp1, *tmp2, *err;
@@ -98,25 +100,35 @@ int main(int argc, char** argv)
             factor = 0.5 * (dist13 - 1.0);
             tmp2 = new tf::Vector3(factor * err->x(), factor * err->y(), 0);
             cmd1 = *tmp1 + *tmp2;
+	    
             //cmd1.setX( cmd1.x() + EXT_SPD);
             //vectNormalize(cmd1, 2);
             tf::Matrix3x3(qactual1).getRPY(roll, pitch, yaw);
             lin_vel = cos(yaw) * cmd1.x() + sin(yaw) * cmd1.y();
             ang_vel = -(1 / PIVOT_D_AXIS) * sin(yaw) * cmd1.x()+(1 / PIVOT_D_AXIS) * cos(yaw) * cmd1.y();
             msg.linear = lin_vel * SPEED_MULT;
+	    if(powf(dist12-1,2) > ERR_TSRH || powf(dist13-1,2) > ERR_TSRH)
+	    {
             if (msg.linear > 10.0)
                 msg.linear = 10.0;
             if (msg.linear < -10.0)
                 msg.linear = -10.0;
             msg.angular = ang_vel * ANG_MULT;
-            /*if (msg.angular > 0.4)
+            if (msg.angular > 0.4)
                 msg.angular = 0.4;
             if (msg.angular < -0.4)
-                msg.angular = -0.4;*/
+                msg.angular = -0.4;
+	    }
+	    else
+	    {
+		msg.linear = 0;
+		msg.angular= 0;
+	    }
+
 
             if (publish)
             {
-                //pubCmdVel1.publish(msg);
+                pubCmdVel1.publish(msg);
             }
             std::cout << "R1 Px: " << vactual1.x() << " Py: " << vactual1.y() << "0: " << yaw << std::endl;
             std::cout << "Robot 1 -> V: " << msg.linear << "  0: " << msg.angular << std::endl;
@@ -135,15 +147,24 @@ int main(int argc, char** argv)
             lin_vel = cos(yaw) * cmd2.x() + sin(yaw) * cmd2.y();
             ang_vel = -(1 / PIVOT_D_AXIS) * sin(yaw) * cmd2.x()+(1 / PIVOT_D_AXIS) * cos(yaw) * cmd2.y();
             msg.linear = lin_vel * SPEED_MULT;
+	    if(powf(dist12-1,2) > ERR_TSRH || powf(dist23-1,2) > ERR_TSRH)
+	    {
             if (msg.linear > 10.0)
                 msg.linear = 10.0;
             if (msg.linear < -10.0)
                 msg.linear = -10.0;
             msg.angular = ang_vel * ANG_MULT;
-            /*if (msg.angular > 0.4)
+            if (msg.angular > 0.4)
                 msg.angular = 0.4;
             if (msg.angular < -0.4)
-                msg.angular = -0.4;*/
+                msg.angular = -0.4;
+	    }
+	    else
+	    {
+		msg.linear = 0;
+		msg.angular= 0;
+	    }
+
 
             if (publish)
             {
@@ -165,26 +186,44 @@ int main(int argc, char** argv)
             lin_vel = cos(yaw) * cmd3.x() + sin(yaw) * cmd3.y();
             ang_vel = -(1 / PIVOT_D_AXIS) * sin(yaw) * cmd3.x()+(1 / PIVOT_D_AXIS) * cos(yaw) * cmd3.y();
             msg.linear = lin_vel * SPEED_MULT;
+	    if(powf(dist13-1,2) > ERR_TSRH || powf(dist23-1,2) > ERR_TSRH)
+	    {
             if (msg.linear > 10.0)
                 msg.linear = 10.0;
             if (msg.linear < -10.0)
                 msg.linear = -10.0;
             msg.angular = ang_vel * ANG_MULT;
-            /*if (msg.angular > 0.4)
+            if (msg.angular > 0.4)
                 msg.angular = 0.4;
             if (msg.angular < -0.4)
-                msg.angular = -0.4;*/
+                msg.angular = -0.4;
+	    }
+	    else
+	    {
+		msg.linear = 0;
+		msg.angular= 0;
+	    }
+
 
             if (publish)
             {
                 pubCmdVel3.publish(msg);
+		std_msgs::Bool newstatus;
+		newstatus.data = true;
+		pubStatus.publish(newstatus);
                 publish = false;
             }
             tf::Matrix3x3(qactual1).getRPY(roll, pitch, yaw);
 
 
             std::cout << "Robot 3 -> V: " << msg.linear << "  0: " << msg.angular << std::endl;
-            std::cout << "Formation : [" << dist12 << " , " << dist13 << " , " << dist23 << "]" << std::endl << std::endl;
+            std::cout << "R1 Px: " << vactual1.x() << " Py: " << vactual1.y() << std::endl;
+	    std::cout << "R2 Px: " << vactual2.x() << " Py: " << vactual2.y() << std::endl;
+	    std::cout << "R3 Px: " << vactual3.x() << " Py: " << vactual3.y() << std::endl;
+	    std::cout << "Formation : [" << dist12 << " , " << dist13 << " , " << dist23 << "]" << std::endl << std::endl;
+	    std::cout << "(dist12 > ERR_TSRH || dist13 > ERR_TSRH) = ( " << ((powf(dist12-1,2) > ERR_TSRH)?"true":"false") << " , " << ((powf(dist13-1,2) > ERR_TSRH)?"true":"false") << " )" <<std::endl;
+	    std::cout << "(dist12 > ERR_TSRH || dist23 > ERR_TSRH) = ( " << ((powf(dist12-1,2) > ERR_TSRH)?"true":"false") << " , " << ((powf(dist23-1,2) > ERR_TSRH)?"true":"false") << " )" <<std::endl;
+	    std::cout << "(dist13 > ERR_TSRH || dist23 > ERR_TSRH) = ( " << ((powf(dist13-1,2) > ERR_TSRH)?"true":"false") << " , " << ((powf(dist23-1,2) > ERR_TSRH)?"true":"false") << " )" <<std::endl;
         }
         catch (tf::TransformException ex)
         {
@@ -206,4 +245,5 @@ void vectNormalize(tf::Vector3& vect, double norm)
     vect.setX(vect.x() * localnorm);
     vect.setY(vect.y() * localnorm);
 }
+
 
