@@ -62,5 +62,7 @@
 		</node>
 	<!-- == END ROBOT 03 == -->
 
+	<param name="aggregator/filt_coeff" value="0.99"/>
 	<node pkg="timestats" type="ts_monitor" name="aggregator"/>
+
 </launch>
