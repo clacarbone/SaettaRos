@@ -1,13 +1,15 @@
 #define __GXX_EXPERIMENTAL_CXX0X__
 #include <ros/ros.h>
+#include <std_msgs/Float32.h>
 #include <std_msgs/Bool.h>
 #define LOOP_RATE 50
 
-bool publish = false, alive = false;
+bool publish = false;
+float alive = 0;
 
 void timerCallbackNuller(const ros::TimerEvent&)
 {
-    alive = false;
+    alive = 0;
 }
 
 void timerCallbackUpdater(const ros::TimerEvent&)
@@ -17,7 +19,7 @@ void timerCallbackUpdater(const ros::TimerEvent&)
 
 void subscriberCallback(const std_msgs::Bool& msg)
 {
-    alive = true;
+    alive = 1;
 }
 
 int main(int argc, char** argv)
@@ -42,18 +44,19 @@ int main(int argc, char** argv)
     ros::Rate r(LOOP_RATE);
     ros::Publisher pubStatus;
     ros::Subscriber subStatus;
-    pubStatus = n.advertise<std_msgs::Bool>("/rigidform_status",1);
+    pubStatus = n.advertise<std_msgs::Float32>("/rigidform_status",1);
     subStatus = n.subscribe("rigidform_service", 1, subscriberCallback);
-    ros::Timer timer1 = n.createTimer(ros::Duration(0.1), timerCallbackNuller);
-    ros::Timer timer2 = n.createTimer(ros::Duration(0.5), timerCallbackUpdater);
+    ros::Timer timer1 = n.createTimer(ros::Duration(2.0), timerCallbackNuller);
+    ros::Timer timer2 = n.createTimer(ros::Duration(0.52), timerCallbackUpdater);
     while (n.ok())
     {
 
         if(publish)
 	{
-	    std_msgs::Bool newmsg;
+	    std_msgs::Float32 newmsg;
 	    newmsg.data = alive;
 	    pubStatus.publish(newmsg);
+	    publish=false;
 	}
 
         ros::spinOnce();
