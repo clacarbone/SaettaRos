@@ -75,8 +75,10 @@ void subscriberCallback(const timestats::StatsInfo& msg)
 {    
         if ((_datamap_iter = _datamap.find(msg.name)) != _datamap.end())
         {
-            (*_datamap_iter).second.ping.assignFromMs(msg.ping);
-            (*_datamap_iter).second.jitter.assignFromMs(msg.jitter);
+            //(*_datamap_iter).second.ping.assignFromMs(msg.ping);
+            //(*_datamap_iter).second.jitter.assignFromMs(msg.jitter);
+            (*_datamap_iter).second.addPingMs(msg.ping);
+            (*_datamap_iter).second.addJitterMs(msg.jitter);
             (*_datamap_iter).second.name.assign(msg.name);
             (*_datamap_iter).second.mov_aver_size = msg.filter_size;
         }
@@ -86,8 +88,10 @@ void subscriberCallback(const timestats::StatsInfo& msg)
             mydata.filt_coeff = filt_coeff;
             mydata.mov_aver_size = msg.filter_size;
             mydata.name.assign(msg.name);
-            mydata.ping.assignFromMs(msg.ping);
-            mydata.jitter.assignFromMs(msg.jitter);
+            //mydata.ping.assignFromMs(msg.ping);
+            mydata.addPingMs(msg.ping);
+            //mydata.jitter.assignFromMs(msg.jitter);
+            mydata.addJitterMs(msg.jitter);
             _datamap.insert(std::make_pair(msg.name, mydata));
         }
     
