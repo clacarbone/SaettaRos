@@ -23,6 +23,7 @@
 #include <saetta_msgs/cmd_vel.h>
 #include <math.h>
 #include <tf/transform_listener.h>
+#include <std_msgs/Bool.h>
 namespace rigidform
 {
 
