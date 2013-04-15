@@ -42,7 +42,7 @@ void subscriberCallback(const timestats::Report& msg)
     timestats::Machine localmachine;
     localmachine.name.assign(MachineName);
     localmachine.timestamp = ((timestruct.tv_sec << 32) + timestruct.tv_nsec);
-    traceReply.machine.insert(traceReply.machine.end(), localmachine);
+    traceReply.machine.push_back(localmachine);
     if (master == 1)
     {
         std::cout << "Received trace id: " << traceReply.header << std::endl << "no: " << traceReply.counter << std::endl;
@@ -93,7 +93,6 @@ int main(int argc, char** argv)
             if (ping_submit_ready == true)
             {
                 ping_submit_ready = false;
-                ss.str("");
                 localpub.publish(traceNew);
             }
             
