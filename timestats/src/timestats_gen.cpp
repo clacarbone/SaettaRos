@@ -28,7 +28,7 @@ void timerCallback(const ros::TimerEvent&)
     traceNew.counter = counter; 
     timestats::Machine localmachine;
     localmachine.name.assign(MachineName);
-    localmachine.timestamp = ((timestruct.tv_sec << 32) + timestruct.tv_nsec);
+    localmachine.timestamp = ((((unsigned long long int)timestruct.tv_sec) << 32) + timestruct.tv_nsec);
     traceNew.machine.push_back(localmachine);
     ping_submit_ready = true;
     counter++;
@@ -41,7 +41,7 @@ void subscriberCallback(const timestats::Report& msg)
     traceReply = msg;
     timestats::Machine localmachine;
     localmachine.name.assign(MachineName);
-    localmachine.timestamp = ((timestruct.tv_sec << 32) + timestruct.tv_nsec);
+    localmachine.timestamp = (((uint64_t)timestruct.tv_sec << 32) + timestruct.tv_nsec);
     traceReply.machine.push_back(localmachine);
     if (master == 1)
     {
@@ -51,6 +51,12 @@ void subscriberCallback(const timestats::Report& msg)
         std::cout << "Ping: " << _node_data->getPingAverageMs() << std::endl
                     << "Jitter: " << _node_data->getPingJitterMs() <<std::endl << std::endl;
         statsmsg.name.assign(MachineName);
+        if (_node_data->getPingAverageMs() < 0)
+        {
+            std::cout << "\tfirst: " << (traceReply.machine.front()).timestamp << " | " << (((uint64_t)timestruct.tv_sec << 32) + timestruct.tv_nsec) << std::endl;
+            std::cout << "\tlast: " << (traceReply.machine.back()).timestamp << std::endl;
+            int a =1;
+        }
         statsmsg.ping = _node_data->getPingAverageMs();
         statsmsg.jitter = _node_data->getPingJitterMs();
         statsmsg.filter_size = static_cast<unsigned int> (_node_data->getFilterSize());

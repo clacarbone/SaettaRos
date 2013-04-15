@@ -10,6 +10,7 @@
 
 #include <string>
 #include <list>
+#include <cstdint>
 #include <time.h>
 #include <ros/ros.h>
 #include <ros/subscriber.h>
@@ -34,9 +35,10 @@ namespace TimeStatistics
         template <typename T>
         void assignFromMs(T num)
         {
-            num=num*1000000;
-            _tvalue.tv_sec = ((static_cast<unsigned long int>(num)) & 0xffffffff00000000) >> 32;
-            _tvalue.tv_nsec = ((static_cast<unsigned long int>(num)) & 0x00000000ffffffff);
+            uint64_t local = num;
+            local *= 1000000;
+            _tvalue.tv_sec = static_cast<uint32_t>(local >> 32);
+            _tvalue.tv_nsec = static_cast<uint32_t>(local & 0x00000000ffffffff);
         }
         operator double();
         operator float();
