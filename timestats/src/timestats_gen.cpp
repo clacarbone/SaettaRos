@@ -16,61 +16,60 @@ bool ping_submit_ready = false, ready_reply = false, master = false, stats_submi
 std::stringstream ss;
 TimeStatistics::accumulator *_node_data;
 
-
-
-
-void timerCallback(const ros::TimerEvent&)
+void timerCallback( const ros::TimerEvent& tevent)
 {
     timespec timestruct;
     clock_gettime(CLOCK_REALTIME, &timestruct);
     traceNew.machine.clear();
     traceNew.header.assign(MachineName);
-    traceNew.counter = counter; 
+    traceNew.counter = counter;
     timestats::Machine localmachine;
     localmachine.name.assign(MachineName);
-    localmachine.timestamp = ((((unsigned long long int)timestruct.tv_sec) << 32) + timestruct.tv_nsec);
+    localmachine.timestamp = ((((unsigned long long int) timestruct.tv_sec) << 32) + timestruct.tv_nsec);
     traceNew.machine.push_back(localmachine);
     ping_submit_ready = true;
     counter++;
 }
 
-void subscriberCallback(const timestats::Report& msg)
+void subscriberCallback( const timestats::Report& msg )
 {
     timespec timestruct;
     clock_gettime(CLOCK_REALTIME, &timestruct);
     traceReply = msg;
     timestats::Machine localmachine;
     localmachine.name.assign(MachineName);
-    localmachine.timestamp = (((uint64_t)timestruct.tv_sec << 32) + timestruct.tv_nsec);
+    localmachine.timestamp = (((uint64_t) timestruct.tv_sec << 32) + timestruct.tv_nsec);
     traceReply.machine.push_back(localmachine);
-    if (master == 1)
+    if (msg.counter + 2 >= counter)
     {
         std::cout << "Received trace id: " << traceReply.header << std::endl << "no: " << traceReply.counter << std::endl;
-        
-        _node_data->addMeasure((traceReply.machine.back()).timestamp - (traceReply.machine.front()).timestamp);
-        std::cout << "Ping: " << _node_data->getPingAverageMs() << std::endl
-                    << "Jitter: " << _node_data->getPingJitterMs() <<std::endl << std::endl;
-        statsmsg.name.assign(MachineName);
-        if (_node_data->getPingAverageMs() < 0)
+        uint64_t measure = (traceReply.machine.back()).timestamp - (traceReply.machine.front()).timestamp;
+        if (measure < 1500000000)
         {
-            std::cout << "\tfirst: " << (traceReply.machine.front()).timestamp << " | " << (((uint64_t)timestruct.tv_sec << 32) + timestruct.tv_nsec) << std::endl;
-            std::cout << "\tlast: " << (traceReply.machine.back()).timestamp << std::endl;
-            int a =1;
+            _node_data->addMeasure((traceReply.machine.back()).timestamp - (traceReply.machine.front()).timestamp);
+            std::cout << "Ping: " << _node_data->getPingAverageMs() << std::endl
+                    << "Jitter: " << _node_data->getPingJitterMs() << std::endl << std::endl;
+            statsmsg.name.assign(MachineName);
+            if (_node_data->getPingAverageMs() > 100000)
+            {
+                std::cout << "\tlast: " << (traceReply.machine.back()).timestamp << " | " << (((uint64_t) timestruct.tv_sec << 32) + timestruct.tv_nsec) << std::endl;
+                std::cout << "\tfirst: " << (traceReply.machine.front()).timestamp << std::endl;
+                int a = 1;
+            }
+            statsmsg.ping = _node_data->getPingAverageMs();
+            statsmsg.jitter = _node_data->getPingJitterMs();
+            statsmsg.filter_size = static_cast<unsigned int> (_node_data->getFilterSize());
+            stats_submit_ready = true;
         }
-        statsmsg.ping = _node_data->getPingAverageMs();
-        statsmsg.jitter = _node_data->getPingJitterMs();
-        statsmsg.filter_size = static_cast<unsigned int> (_node_data->getFilterSize());
-        stats_submit_ready = true;
-
     }
     else
         ready_reply = true;
 
 }
 
-int main(int argc, char** argv)
+int main( int argc, char** argv )
 {
-    
+
     ros::init(argc, argv, "Time_Stats_Generator");
     ros::NodeHandle n;
     ros::NodeHandle private_handle_("~");
@@ -85,13 +84,13 @@ int main(int argc, char** argv)
     ros::Rate r(2000);
     ros::Publisher localpub, statspub;
     ros::Subscriber localsub;
-    localpub = n.advertise<timestats::Report> (topic_output.c_str(), 1);
+    localpub = n.advertise<timestats::Report > (topic_output.c_str(), 1);
 
     localsub = n.subscribe(topic_input.c_str(), 1, subscriberCallback);
     _node_data = new TimeStatistics::accumulator("node", filter);
     if (master == 1)
     {
-        statspub = n.advertise<timestats::StatsInfo>("timestats_pool", 1);
+        statspub = n.advertise<timestats::StatsInfo > ("timestats_pool", 1);
         std::cout << "Running as master" << std::endl << "Timer delay: " << delay << "s" << std::endl << "Node name: " << MachineName << std::endl;
         ros::Timer timer = n.createTimer(ros::Duration(delay), timerCallback);
         while (n.ok())
@@ -101,10 +100,10 @@ int main(int argc, char** argv)
                 ping_submit_ready = false;
                 localpub.publish(traceNew);
             }
-            
+
             if (stats_submit_ready == true)
             {
-                stats_submit_ready = false;                
+                stats_submit_ready = false;
                 statspub.publish(statsmsg);
             }
             ros::spinOnce();
