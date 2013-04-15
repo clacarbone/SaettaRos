@@ -25,7 +25,7 @@ void timerCallback( const ros::TimerEvent& tevent)
     traceNew.counter = counter;
     timestats::Machine localmachine;
     localmachine.name.assign(MachineName);
-    localmachine.timestamp = ((((unsigned long long int) timestruct.tv_sec) << 32) + timestruct.tv_nsec);
+    localmachine.timestamp = ((((uint64_t) timestruct.tv_sec) << 32) + timestruct.tv_nsec);
     traceNew.machine.push_back(localmachine);
     ping_submit_ready = true;
     counter++;
@@ -54,7 +54,6 @@ void subscriberCallback( const timestats::Report& msg )
             {
                 std::cout << "\tlast: " << (traceReply.machine.back()).timestamp << " | " << (((uint64_t) timestruct.tv_sec << 32) + timestruct.tv_nsec) << std::endl;
                 std::cout << "\tfirst: " << (traceReply.machine.front()).timestamp << std::endl;
-                int a = 1;
             }
             statsmsg.ping = _node_data->getPingAverageMs();
             statsmsg.jitter = _node_data->getPingJitterMs();
