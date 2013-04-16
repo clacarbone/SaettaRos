@@ -16,7 +16,7 @@ bool ping_submit_ready = false, ready_reply = false, master = false, stats_submi
 std::stringstream ss;
 TimeStatistics::accumulator *_node_data;
 
-void timerCallback( const ros::TimerEvent& tevent)
+void timerCallback( const ros::TimerEvent& tevent )
 {
     timespec timestruct;
     clock_gettime(CLOCK_REALTIME, &timestruct);
@@ -40,25 +40,28 @@ void subscriberCallback( const timestats::Report& msg )
     localmachine.name.assign(MachineName);
     localmachine.timestamp = (((uint64_t) timestruct.tv_sec << 32) + timestruct.tv_nsec);
     traceReply.machine.push_back(localmachine);
-    if (msg.counter + 2 >= counter)
+    if (master)
     {
-        std::cout << "Received trace id: " << traceReply.header << std::endl << "no: " << traceReply.counter << std::endl;
-        uint64_t measure = (traceReply.machine.back()).timestamp - (traceReply.machine.front()).timestamp;
-        if (measure < 1500000000)
+        if (msg.counter + 2 >= counter)
         {
-            _node_data->addMeasure((traceReply.machine.back()).timestamp - (traceReply.machine.front()).timestamp);
-            std::cout << "Ping: " << _node_data->getPingAverageMs() << std::endl
-                    << "Jitter: " << _node_data->getPingJitterMs() << std::endl << std::endl;
-            statsmsg.name.assign(MachineName);
-            if (_node_data->getPingAverageMs() > 100000)
+            std::cout << "Received trace id: " << traceReply.header << std::endl << "no: " << traceReply.counter << std::endl;
+            uint64_t measure = (traceReply.machine.back()).timestamp - (traceReply.machine.front()).timestamp;
+            if (measure < 1500000000)
             {
-                std::cout << "\tlast: " << (traceReply.machine.back()).timestamp << " | " << (((uint64_t) timestruct.tv_sec << 32) + timestruct.tv_nsec) << std::endl;
-                std::cout << "\tfirst: " << (traceReply.machine.front()).timestamp << std::endl;
+                _node_data->addMeasure((traceReply.machine.back()).timestamp - (traceReply.machine.front()).timestamp);
+                std::cout << "Ping: " << _node_data->getPingAverageMs() << std::endl
+                        << "Jitter: " << _node_data->getPingJitterMs() << std::endl << std::endl;
+                statsmsg.name.assign(MachineName);
+                if (_node_data->getPingAverageMs() > 100000)
+                {
+                    std::cout << "\tlast: " << (traceReply.machine.back()).timestamp << " | " << (((uint64_t) timestruct.tv_sec << 32) + timestruct.tv_nsec) << std::endl;
+                    std::cout << "\tfirst: " << (traceReply.machine.front()).timestamp << std::endl;
+                }
+                statsmsg.ping = _node_data->getPingAverageMs();
+                statsmsg.jitter = _node_data->getPingJitterMs();
+                statsmsg.filter_size = static_cast<unsigned int> (_node_data->getFilterSize());
+                stats_submit_ready = true;
             }
-            statsmsg.ping = _node_data->getPingAverageMs();
-            statsmsg.jitter = _node_data->getPingJitterMs();
-            statsmsg.filter_size = static_cast<unsigned int> (_node_data->getFilterSize());
-            stats_submit_ready = true;
         }
     }
     else

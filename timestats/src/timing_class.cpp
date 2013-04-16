@@ -54,7 +54,7 @@ namespace TimeStatistics
         return _tvalue;
     }
 
-    void timestruct::set_nsec(long int nsec)
+    void timestruct::set_nsec(uint32_t nsec)
     {
         _tvalue.tv_nsec = nsec;
     }
@@ -64,7 +64,7 @@ namespace TimeStatistics
         return _tvalue.tv_nsec;
     }
 
-    void timestruct::set_sec(long int sec)
+    void timestruct::set_sec(uint32_t sec)
     {
         _tvalue.tv_sec = sec;
     }
@@ -86,23 +86,23 @@ namespace TimeStatistics
 
     void accumulator::calculations()
     {
-        float ftemp = 0;
+        double ftemp = 0;
         uint64_t mmax = 0, mmin = 0, itemp;
 
         for (_iter = _pings.begin(); _iter != _pings.end(); _iter++)
         {
             
-            ftemp += (((unsigned long long int)(*_iter).get_sec()) << 32) + (*_iter).get_nsec();
-            itemp = (((unsigned long long int)(*_iter).get_sec()) << 32) + (*_iter).get_nsec();
+            ftemp += (((uint64_t)(*_iter).get_sec()) << 32) + (*_iter).get_nsec();
+            itemp = (((uint64_t)(*_iter).get_sec()) << 32) + (*_iter).get_nsec();
             //std::cout << "\tping: " << (*_iter).ms() << std::endl;
             if (mmax == 0)
-                mmax = (((unsigned long long int)(*_iter).get_sec()) << 32) + (*_iter).get_nsec();
+                mmax = (((uint64_t)(*_iter).get_sec()) << 32) + (*_iter).get_nsec();
             else
                 if (itemp > mmax)
                 mmax = itemp;
 
             if (mmin == 0)
-                mmin = (((unsigned long long int)(*_iter).get_sec()) << 32) + (*_iter).get_nsec();
+                mmin = (((uint64_t)(*_iter).get_sec()) << 32) + (*_iter).get_nsec();
             else
                 if (itemp < mmin)
                 mmin = itemp;
@@ -110,11 +110,14 @@ namespace TimeStatistics
         }
         //std::cout << "\tMax: " << mmax << std::endl << "\tMin: " << mmin << std::endl;
         ftemp = ftemp / _pings.size();
-        _average.set_nsec(static_cast<uint32_t>(((uint64_t) ftemp) & 0x00000000ffffffff));
-        _average.set_sec(static_cast<uint32_t>((((uint64_t) ftemp) & 0xffffffff00000000) >> 32));
+        _average.set_nsec(static_cast<uint32_t>(ftemp));
+        //static_cast<uint32_t>(((uint64_t) ftemp * 1000000000) & 0x00000000ffffffff));
+        //_average.set_sec(static_cast<uint32_t>((((uint64_t) ftemp) & 0xffffffff00000000) >> 32));
+        _average.set_sec(static_cast<uint32_t>(ftemp/1000000000));
         itemp = mmax - mmin;
-        _jitter.set_nsec(itemp & 0x00000000ffffffff);
-        _jitter.set_sec(static_cast<uint32_t>(((uint64_t)itemp & 0xffffffff00000000) >> 32));
+        _jitter.set_nsec(static_cast<uint32_t>(itemp & 0x00000000ffffffff));
+        //_jitter.set_sec(static_cast<uint32_t>(((uint64_t)itemp & 0xffffffff00000000) >> 32));
+        _jitter.set_sec(static_cast<uint32_t>(itemp >> 32));
 
     }
 
@@ -156,10 +159,11 @@ namespace TimeStatistics
         calculations();
     };
 
-    void accumulator::addMeasure(long long int t)
+    void accumulator::addMeasure(uint64_t t)
     {
+        
         timespec tt;
-        tt.tv_sec = static_cast<uint32_t>(((uint64_t)t & (uint64_t)0xffffffff00000000) >> 32);
+        tt.tv_sec = static_cast<uint32_t>(t >> 32);
         tt.tv_nsec = t & 0x00000000ffffffff;
         addMeasure(tt);
     };

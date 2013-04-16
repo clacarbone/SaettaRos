@@ -43,9 +43,9 @@ namespace TimeStatistics
         operator double();
         operator float();
         operator timespec();
-        void set_nsec(long int nsec);
+        void set_nsec(uint32_t nsec);
         long int get_nsec();
-        void set_sec(long int sec);
+        void set_sec(uint32_t sec);
         long int get_sec();
         double ms();
         double us();
@@ -92,7 +92,7 @@ namespace TimeStatistics
         };
 
         void addMeasure(timespec t);
-        void addMeasure(long long int t);
+        void addMeasure(uint64_t);
         double getPing();
         double getPingMs();
         timespec getPingAverageT();
