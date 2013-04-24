@@ -121,13 +121,13 @@ namespace saetta_vision
 
     bool Vision::getTryRobList(RobotList_t& roblist  )
     {
-        //if (mutexRobListAccess.try_lock())
-        //{
+        if (mutexRobListAccess.try_lock())
+        {
             roblist = avRobList;
-            //mutexRobListAccess.unlock();
+            mutexRobListAccess.unlock();
             return true;
-        //}
-        //return false;
+        }
+        return false;
     }
 
     void Vision::capture_loop( )
