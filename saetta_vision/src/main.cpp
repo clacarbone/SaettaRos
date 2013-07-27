@@ -269,7 +269,7 @@ int main(int argc, char** argv)
             //robotListLocal = myvision.getRobList();
             filterRobList(robotListOld, robotListLocal);
             std::cout << std::endl;
-            for (std::vector < std::pair < std::string, int >> ::iterator myiter = robVector.begin(); myiter != robVector.end(); ++myiter)
+            for (std::vector < std::pair < std::string, int > > ::iterator myiter = robVector.begin(); myiter != robVector.end(); ++myiter)
             {
                 ss.str("");
                 ss << "/" << (*myiter).first << "/base_link";
@@ -281,6 +281,15 @@ int main(int argc, char** argv)
                 //std::cout << ss.str() << "\ttf_trasl(" << robotListLocal.robList[index].coord.x/1000 <<"," << robotListLocal.robList[index].coord.y/1000 << "," << 0 << ")" << std::endl;
                 //std::cout << ss.str() << "\ttf_rot(" << 0 <<","<<  0 <<"," << robotListLocal.robList[index].orientation/360*2*M_PI << ")" << std::endl;
             }
+		/*if (active_list_not_initialized)
+		{
+			active_list_not_initialized = false;
+			for (std::vector < std::pair < std::string, int > > ::iterator myiter = robVector.begin(); myiter != robVector.end(); ++myiter)
+				array_list_msg.add(myiter.first);
+
+		}
+
+		array_publisher.publish(array_list_msg);*/
             robotListOld = robotListLocal;
         }
         ros::spinOnce();
